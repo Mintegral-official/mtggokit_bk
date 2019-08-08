@@ -7,20 +7,20 @@ import (
 )
 
 
-// Task run by ConcurrentGo
-// ConcurrentGo will return immediately after all unignorable tasks done
-// CancelFun will be invoked when ConcurrentGo return. It's always context's cancel function.
+// Task run by ConcurrentRun
+// ConcurrentRun will return immediately after all unignorable tasks done
+// CancelFun will be invoked when ConcurrentRun return. It's always context's cancel function.
 type Task struct {
 	Func func()
 	Ignorable bool
 	CancelFunc func()
 }
 
-// ConcurrentGo run your function concurrently
-// ConcurrentGo give up when ctx.Done() if ctx != nil
+// ConcurrentRun run your function concurrently
+// ConcurrentRun give up when ctx.Done() if ctx != nil
 // timeout set timeout for run given task
 // return done or timeout flags according to given tasks
-func ConcurrentGo(ctx context.Context, timeout time.Duration, tasks ...Task) []bool{
+func ConcurrentRun(ctx context.Context, timeout time.Duration, tasks ...Task) []bool{
 	taskFlags := make([]bool, len(tasks))
 	if ctx == nil {
 		ctx = context.Background()
