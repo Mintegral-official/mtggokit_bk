@@ -1,0 +1,20 @@
+sudo: false
+language: go
+script:
+  - cd parallel
+  - go test -race
+go:
+  - 1.10.x
+  - 1.11.x
+  - 1.12.x
+  - tip
+env:
+  global:
+    - GORACE="halt_on_error=1"
+
+notifications:
+  email:
+    recipients:
+    - chengqinglian@qq.com
+    on_success: change
+    on_failure: always
