@@ -1,2 +1,2 @@
-# mtggokits
-mtg go kits
+# mtggokit
+mtg go kit
