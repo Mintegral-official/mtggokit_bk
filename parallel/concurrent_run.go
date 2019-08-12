@@ -2,6 +2,7 @@ package parallel
 
 import (
 	"context"
+	"github.com/panjf2000/ants"
 	"sync"
 	"time"
 )
@@ -9,7 +10,7 @@ import (
 
 // Task run by ConcurrentRun
 // ConcurrentRun will return immediately after all unignorable tasks done
-// CancelFun will be invoked when ConcurrentRun return. It's always context's cancel function.
+// CancelFun will be invoked when this task overtime. It's always context's cancel function.
 type Task struct {
 	Func func()
 	Ignorable bool
@@ -34,25 +35,26 @@ func ConcurrentRun(ctx context.Context, timeout time.Duration, tasks ...Task) []
 		if !tasks[i].Ignorable {
 			wg.Add(1)
 		}
-		if tasks[i].CancelFunc != nil {
-			defer tasks[i].CancelFunc()
-		}
-
-		go func(i int) {
-			tasks[i].Func()
+		uniq_i := i
+		ants.Submit(func() {
+			tasks[uniq_i].Func()
 			if ctx.Err() == nil {
-				taskFlags[i] = true
+				taskFlags[uniq_i] = true
+			} else {
+				if tasks[uniq_i].CancelFunc != nil {
+					tasks[uniq_i].CancelFunc()
+				}
 			}
-			if !tasks[i].Ignorable {
+			if !tasks[uniq_i].Ignorable {
 				wg.Done()
 			}
-		}(i)
+		})
 	}
 
-	go func() {
+	ants.Submit( func() {
 		wg.Wait()
 		cancelFun()
-	}()
+	})
 
 	<- ctx.Done()
 	return taskFlags

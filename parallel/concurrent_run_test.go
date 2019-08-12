@@ -19,12 +19,14 @@ func TestConcurrentRun(t *testing.T) {
 	})
 
 	Convey("ignorable任务被取消, 对应cancelFunc被执行", t, func() {
-		var canceled bool
-		hasDone := ConcurrentRun(nil, time.Second , Task{Ignorable:false, Func:func(){}, CancelFunc:func(){canceled = true}},
-								Task{Ignorable:true, Func:func(){time.Sleep(time.Minute)}})
+		var canceledOne, canceledTwo bool
+		hasDone := ConcurrentRun(nil, time.Second , Task{Ignorable:false, Func:func(){}, CancelFunc:func(){canceledOne = true}},
+								Task{Ignorable:true, Func:func(){time.Sleep(time.Second * 2)}, CancelFunc:func(){canceledTwo = true}})
 		So(hasDone[0], ShouldEqual, true)
 		So(hasDone[1], ShouldEqual, false)
-		So(canceled, ShouldEqual, true)
+		time.Sleep(time.Second * 3)
+		So(canceledOne, ShouldEqual, false)
+		So(canceledTwo, ShouldEqual, true)
 	})
 }
 
