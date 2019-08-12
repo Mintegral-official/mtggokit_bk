@@ -22,7 +22,7 @@ type Task struct {
 // timeout set timeout for run given task
 // return done or timeout flags according to given tasks
 func ConcurrentRun(ctx context.Context, timeout time.Duration, tasks ...Task) []bool{
-	taskFlags := make([]bool, len(tasks))
+	finished := make([]bool, len(tasks))
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -35,20 +35,27 @@ func ConcurrentRun(ctx context.Context, timeout time.Duration, tasks ...Task) []
 		if !tasks[i].Ignorable {
 			wg.Add(1)
 		}
-		uniq_i := i
+		localI := i
+		//run task
 		ants.Submit(func() {
-			tasks[uniq_i].Func()
+			tasks[localI].Func()
 			if ctx.Err() == nil {
-				taskFlags[uniq_i] = true
-			} else {
-				if tasks[uniq_i].CancelFunc != nil {
-					tasks[uniq_i].CancelFunc()
-				}
+				finished[localI] = true
 			}
-			if !tasks[uniq_i].Ignorable {
+			if !tasks[localI].Ignorable {
 				wg.Done()
 			}
 		})
+		//register cancel function
+		if tasks[localI].CancelFunc != nil {
+			ants.Submit(func(){
+				<- ctx.Done()
+				if !finished[localI] {
+					tasks[localI].CancelFunc()
+				}
+			})
+
+		}
 	}
 
 	ants.Submit( func() {
@@ -57,5 +64,5 @@ func ConcurrentRun(ctx context.Context, timeout time.Duration, tasks ...Task) []
 	})
 
 	<- ctx.Done()
-	return taskFlags
+	return finished
 }

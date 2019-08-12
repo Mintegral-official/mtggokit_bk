@@ -2,9 +2,8 @@ sudo: false
 language: go
 script:
   - cd parallel
-  - go test -race
+  - go test
 go:
-  - 1.10.x
   - 1.11.x
   - 1.12.x
   - tip

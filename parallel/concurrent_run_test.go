@@ -24,7 +24,7 @@ func TestConcurrentRun(t *testing.T) {
 								Task{Ignorable:true, Func:func(){time.Sleep(time.Second * 2)}, CancelFunc:func(){canceledTwo = true}})
 		So(hasDone[0], ShouldEqual, true)
 		So(hasDone[1], ShouldEqual, false)
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 1)
 		So(canceledOne, ShouldEqual, false)
 		So(canceledTwo, ShouldEqual, true)
 	})
