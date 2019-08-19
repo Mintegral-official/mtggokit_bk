@@ -13,7 +13,6 @@
 package streamer
 
 import (
-	"context"
 	"mtggokits/datacontainer"
 )
 
@@ -21,6 +20,5 @@ type DataStreamer interface {
 	SetContainer(datacontainer.Container)
 	GetContainer() datacontainer.Container
 
-	LoadBase(ctx context.Context) error
-	LoadInc(ctx context.Context) error
+	UpdateData() error
 }

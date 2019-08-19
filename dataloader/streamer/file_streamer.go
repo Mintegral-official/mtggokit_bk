@@ -2,7 +2,6 @@ package streamer
 
 import (
 	"bufio"
-	"context"
 	"github.com/easierway/concurrent_map"
 	"github.com/pkg/errors"
 	"mtggokits/datacontainer"
@@ -64,19 +63,23 @@ func (fs *FileStreamer) Next() (datacontainer.DataMode, datacontainer.MapKey, in
 	return datacontainer.DataModeAdd, k, v, e
 }
 
-func (fs *FileStreamer) LoadBase(ctx context.Context) error {
-	if fs.f != nil {
-		_ = fs.f.Close()
+func (fs *FileStreamer) UpdateData() error {
+	switch fs.cfg.Mode {
+	case "static":
+	case "dynamic":
+	case "increase":
+		if fs.f != nil {
+			_ = fs.f.Close()
+		}
+		f, err := os.Open(fs.cfg.Path)
+		if err != nil {
+			return err
+		}
+		fs.f = f
+		_, _ = fs.f.Seek(0, 0)
+		return fs.container.LoadBase(fs)
+	default:
+		return errors.New("not support mode[" + fs.cfg.Mode + "]")
 	}
-	f, err := os.Open(fs.cfg.Path)
-	if err != nil {
-		return err
-	}
-	fs.f = f
-	_, _ = fs.f.Seek(0, 0)
-	return fs.container.LoadBase(fs)
-}
 
-func (*FileStreamer) LoadInc(ctx context.Context) error {
-	return nil
 }
