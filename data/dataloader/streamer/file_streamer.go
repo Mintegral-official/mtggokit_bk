@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"github.com/easierway/concurrent_map"
 	"github.com/pkg/errors"
-	"mtggokits/datacontainer"
+	"mtggokits/data/container"
 	"os"
 	"runtime"
 	"strings"
@@ -12,7 +12,7 @@ import (
 
 type FileStreamer struct {
 	location   int
-	container  datacontainer.Container
+	container  container.Container
 	cfg        *FileStreamerCfg
 	f          *os.File
 	scan       *bufio.Scanner
@@ -22,7 +22,7 @@ type FileStreamer struct {
 type DefaultTextParser struct {
 }
 
-func (*DefaultTextParser) Parse(data []byte) (datacontainer.MapKey, interface{}, error) {
+func (*DefaultTextParser) Parse(data []byte) (container.MapKey, interface{}, error) {
 	s := string(data)
 	items := strings.SplitN(s, "\t", 2)
 	if len(items) != 2 {
@@ -40,16 +40,16 @@ func NewFileStream(cfg *FileStreamerCfg) (*FileStreamer, error) {
 		cfg:        cfg,
 		dataParser: &DefaultTextParser{},
 	}
-	f, err := os.Open(cfg.Path)
+	f, err := os.Open(Path)
 	if err != nil {
-		return nil, errors.Wrap(err, "File["+cfg.Path+"]")
+		return nil, errors.Wrap(err, "File["+Path+"]")
 	}
 	fs.f = f
 	runtime.SetFinalizer(fs, DestroyFileStreamer)
 	return fs, nil
 }
 
-func (fs *FileStreamer) SetProcessor(container datacontainer.Container) {
+func (fs *FileStreamer) SetProcessor(container container.Container) {
 	fs.container = container
 }
 
@@ -58,20 +58,20 @@ func (fs *FileStreamer) HasNext() bool {
 
 }
 
-func (fs *FileStreamer) Next() (datacontainer.DataMode, datacontainer.MapKey, interface{}, error) {
-	k, v, e := fs.dataParser.Parse([]byte(fs.scan.Text()))
-	return datacontainer.DataModeAdd, k, v, e
+func (fs *FileStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
+	k, v, e := Parse([]byte(fs.scan.Text()))
+	return container.DataModeAdd, k, v, e
 }
 
 func (fs *FileStreamer) UpdateData() error {
-	switch fs.cfg.Mode {
+	switch Mode {
 	case "static":
 	case "dynamic":
 	case "increase":
 		if fs.f != nil {
 			_ = fs.f.Close()
 		}
-		f, err := os.Open(fs.cfg.Path)
+		f, err := os.Open(Path)
 		if err != nil {
 			return err
 		}
@@ -79,7 +79,7 @@ func (fs *FileStreamer) UpdateData() error {
 		_, _ = fs.f.Seek(0, 0)
 		return fs.container.LoadBase(fs)
 	default:
-		return errors.New("not support mode[" + fs.cfg.Mode + "]")
+		return errors.New("not support mode[" + Mode + "]")
 	}
 
 }

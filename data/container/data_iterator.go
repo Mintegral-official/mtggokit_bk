@@ -1,4 +1,4 @@
-package datacontainer
+package container
 
 type DataMode int
 

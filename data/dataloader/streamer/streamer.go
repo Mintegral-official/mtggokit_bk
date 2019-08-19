@@ -13,12 +13,12 @@
 package streamer
 
 import (
-	"mtggokits/datacontainer"
+	"mtggokits/data/container"
 )
 
 type DataStreamer interface {
-	SetContainer(datacontainer.Container)
-	GetContainer() datacontainer.Container
+	SetContainer(container.Container)
+	GetContainer() container.Container
 
 	UpdateData() error
 }
