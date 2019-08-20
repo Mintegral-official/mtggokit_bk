@@ -1,4 +1,4 @@
-module mtggokits
+module github.com/Mintegral-official/mtggokit
 
 go 1.12
 

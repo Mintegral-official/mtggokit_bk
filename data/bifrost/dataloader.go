@@ -1,9 +1,9 @@
 package bifrost
 
 import (
+	"github.com/Mintegral-official/mtggokit/data/bifrost/streamer"
+	"github.com/Mintegral-official/mtggokit/data/container"
 	"github.com/pkg/errors"
-	"mtggokits/data/bifrost/streamer"
-	"mtggokits/data/container"
 )
 
 type Loader struct {

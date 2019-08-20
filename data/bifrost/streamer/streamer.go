@@ -1,7 +1,7 @@
 package streamer
 
 import (
-	"mtggokits/data/container"
+	"github.com/Mintegral-official/mtggokit/data/container"
 )
 
 type DataStreamer interface {

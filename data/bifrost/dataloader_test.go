@@ -1,8 +1,8 @@
 package bifrost
 
 import (
+	"github.com/Mintegral-official/mtggokit/data/container"
 	"github.com/smartystreets/goconvey/convey"
-	"mtggokits/data/container"
 	"testing"
 )
 

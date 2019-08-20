@@ -2,9 +2,9 @@ package streamer
 
 import (
 	"bufio"
+	"github.com/Mintegral-official/mtggokit/data/container"
 	"github.com/easierway/concurrent_map"
 	"github.com/pkg/errors"
-	"mtggokits/data/container"
 	"os"
 	"runtime"
 	"strings"
