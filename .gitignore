@@ -13,3 +13,5 @@
 
 # ide
 .idea
+
+go.sum

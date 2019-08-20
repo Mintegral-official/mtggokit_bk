@@ -1,9 +1,9 @@
-package dataloader
+package bifrost
 
 import (
 	"github.com/pkg/errors"
+	"mtggokits/data/bifrost/streamer"
 	"mtggokits/data/container"
-	"mtggokits/data/dataloader/streamer"
 )
 
 type Loader struct {

@@ -1,4 +1,4 @@
-package dataloader
+package bifrost
 
 import (
 	"github.com/smartystreets/goconvey/convey"
@@ -30,7 +30,7 @@ func TestLoader_Register(t *testing.T) {
 	convey.Convey("Test register name", t, func() {
 		loader := NewLoader()
 		convey.So(loader, convey.ShouldNotBeNil)
-		loader.Register("abc", &FakeStreamer{})
+		convey.So(loader.Register("abc", &FakeStreamer{}), convey.ShouldBeNil)
 	})
 
 	convey.Convey("Test register duplicate name", t, func() {

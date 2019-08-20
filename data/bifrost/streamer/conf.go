@@ -1,7 +1,7 @@
 package streamer
 
 type StreamerConfig struct {
-	StreamerCfg *StreamerCfg `toml:"dataloader"`
+	StreamerCfg *StreamerCfg `toml:"bifrost"`
 }
 
 type StreamerCfg struct {
