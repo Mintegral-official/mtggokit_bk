@@ -10,19 +10,21 @@ type StreamerCfg struct {
 }
 
 type FileStreamerCfg struct {
-	Name   string `toml:"name"`
-	Path   string `toml:"path"`
-	Mode   string `toml:"mode"`
-	Parser string `toml:"parser"`
+	Name       string     `toml:"name"`
+	Path       string     `toml:"path"`
+	Mode       string     `toml:"mode"`
+	Parser     string     `toml:"parser"`
+	DataParser DataParser `toml:"-"`
 }
 
 type MongoStreamerCfg struct {
-	Mongo      string `toml:"mongo"`
-	Timeout    int    `toml:"timeout"`
-	Name       string `toml:"name"`
-	Db         string `toml:"db"`
-	Collection string `toml:"collection"`
-	BaseQuery  string `toml:"base_query"`
-	IncQuery   string `toml:"inc_query"`
-	Parser     string `toml:"parser"`
+	Mongo      string     `toml:"mongo"`
+	Timeout    int        `toml:"timeout"`
+	Name       string     `toml:"name"`
+	Db         string     `toml:"db"`
+	Collection string     `toml:"collection"`
+	BaseQuery  string     `toml:"base_query"`
+	IncQuery   string     `toml:"inc_query"`
+	Parser     string     `toml:"parser"`
+	DataParser DataParser `toml:"-"`
 }

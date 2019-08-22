@@ -6,12 +6,22 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Logger for log
+type Logger interface {
+	Infof(format string, v ...interface{})
+	Warnf(format string, v ...interface{})
+}
+
 type Loader struct {
 	DataStreamers map[string]streamer.DataStreamer
+	sched         Sched
+	logger        *Logger
 }
 
 func NewLoader() *Loader {
-	return &Loader{DataStreamers: make(map[string]streamer.DataStreamer)}
+	return &Loader{
+		DataStreamers: make(map[string]streamer.DataStreamer),
+	}
 }
 
 func (l *Loader) Get(name string, key container.MapKey) (interface{}, error) {
@@ -31,6 +41,7 @@ func (l *Loader) Register(name string, streamer streamer.DataStreamer) error {
 		return errors.New("streamer[" + name + "] has already exist")
 	}
 	l.DataStreamers[name] = streamer
+	l.sched.AddStreamer(name, streamer)
 	return nil
 }
 

@@ -2,6 +2,7 @@ package streamer
 
 import (
 	"bufio"
+	"context"
 	"github.com/Mintegral-official/mtggokit/data/container"
 	"github.com/easierway/concurrent_map"
 	"github.com/pkg/errors"
@@ -35,7 +36,7 @@ func DestroyFileStreamer(fs *FileStreamer) {
 	_ = fs.f.Close()
 }
 
-func NewFileStream(cfg *FileStreamerCfg) (*FileStreamer, error) {
+func NewFileStreamer(cfg *FileStreamerCfg) (*FileStreamer, error) {
 	fs := &FileStreamer{
 		cfg:        cfg,
 		dataParser: &DefaultTextParser{},
@@ -63,7 +64,7 @@ func (fs *FileStreamer) Next() (container.DataMode, container.MapKey, interface{
 	return container.DataModeAdd, k, v, e
 }
 
-func (fs *FileStreamer) UpdateData() error {
+func (fs *FileStreamer) UpdateData(ctx *context.Context) error {
 	switch fs.cfg.Mode {
 	case "static":
 	case "dynamic":
