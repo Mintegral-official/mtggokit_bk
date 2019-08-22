@@ -15,5 +15,6 @@ notifications:
   email:
     recipients:
     - chengqinglian@qq.com
+    - jia.wang@mintegral.com
     on_success: change
     on_failure: always
