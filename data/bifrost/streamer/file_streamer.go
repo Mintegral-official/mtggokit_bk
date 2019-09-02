@@ -23,13 +23,13 @@ type FileStreamer struct {
 type DefaultTextParser struct {
 }
 
-func (*DefaultTextParser) Parse(data []byte) (container.MapKey, interface{}, error) {
+func (*DefaultTextParser) Parse(data []byte) (container.DataMode, container.MapKey, interface{}, error) {
 	s := string(data)
 	items := strings.SplitN(s, "\t", 2)
 	if len(items) != 2 {
-		return nil, errors.New("items len is not 2, item[" + s + "]"), nil
+		return container.DataModeAdd, nil, nil, errors.New("items len is not 2, item[" + s + "]")
 	}
-	return concurrent_map.StrKey(items[0]), items[1], nil
+	return container.DataModeAdd, concurrent_map.StrKey(items[0]), items[1], nil
 }
 
 func DestroyFileStreamer(fs *FileStreamer) {
@@ -60,8 +60,8 @@ func (fs *FileStreamer) HasNext() bool {
 }
 
 func (fs *FileStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
-	k, v, e := fs.dataParser.Parse([]byte(fs.scan.Text()))
-	return container.DataModeAdd, k, v, e
+	m, k, v, e := fs.dataParser.Parse([]byte(fs.scan.Text()))
+	return m, k, v, e
 }
 
 func (fs *FileStreamer) UpdateData(ctx *context.Context) error {
