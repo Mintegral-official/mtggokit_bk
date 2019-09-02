@@ -36,3 +36,14 @@ func (bm *BufferedMap) LoadBase(iterator DataIterator) error {
 	defer bm.mutex.Unlock()
 	return nil
 }
+
+func (bm *BufferedMap) Set(key MapKey, value interface{}) error {
+	return errors.New("not implement")
+}
+
+func (bm *BufferedMap) Del(key MapKey, value interface{}) {
+}
+
+func (bm *BufferedMap) LoadInc(iterator DataIterator) error {
+	return errors.New("not implement")
+}
