@@ -1,6 +1,6 @@
 # metrics
 
-metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,summary,histograms.而且为一些流行的metrics服务提供了适配器.
+metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,summary.而且为一些流行的metrics服务提供了适配器.
 
 ## usage
 
@@ -11,18 +11,17 @@ log : false
 prometheus: true
 
 esConfig:
-    host: xxxx
-    port: xxxx
-    docId: xxxx
-    docType: xxxx
-    interval: 10s
-    lables:
+    Host: xxxx
+    Port: xxxx
+    DocId: xxxx
+    DocType: xxxx
+    Interval: 10s
+    Lables:
         httpCode
         httpMethod
 
 logConfig:
-    logFile: xxxx
-    lables:
+    Lables:
         httpCode
 
 prometheusConfig:
@@ -38,7 +37,7 @@ prometheusConfig:
 ```golang 
 //use
 func main() {
-    var mulitCount multi.Counter
+    var multiCount multi.Counter
     multiCount = multi.NewCounter("/project/conf/config")
     multiCount.Add(1)
 }
