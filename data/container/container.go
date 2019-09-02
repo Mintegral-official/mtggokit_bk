@@ -10,7 +10,7 @@ type MapKey interface {
 type Container interface {
 	Get(key MapKey) (interface{}, error)
 	Set(key MapKey, value interface{}) error
-	Del(key MapKey) error
+	Del(key MapKey, value interface{})
 
 	LoadBase(dataIter DataIterator) error
 	LoadInc(dataIter DataIterator) error

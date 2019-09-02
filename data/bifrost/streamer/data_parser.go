@@ -1,9 +1,7 @@
 package streamer
 
-import (
-	"github.com/Mintegral-official/mtggokit/data/container"
-)
+import "github.com/Mintegral-official/mtggokit/data/container"
 
 type DataParser interface {
-	Parse([]byte) (container.MapKey, interface{}, error)
+	Parse([]byte) (container.DataMode, container.MapKey, interface{}, error)
 }

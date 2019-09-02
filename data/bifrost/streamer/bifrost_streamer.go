@@ -4,6 +4,7 @@ import "github.com/Mintegral-official/mtggokit/data/container"
 
 type BiFrostStreamerCfg struct {
 	Name         string
+	Version      int //数据格式的版本
 	IpPort       string
 	BaseFilePath string
 }
