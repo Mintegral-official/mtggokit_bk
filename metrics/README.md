@@ -10,28 +10,24 @@ es : true //开关设定
 log : false
 prometheus: true
 
-esConfig:
-    Host: xxxx
-    Port: xxxx
-    DocId: xxxx
-    DocType: xxxx
-    Interval: 10s
-
-prometheusConfig:
-    Namespace: xxx
-    Subsystemp: xxxx
-    Help: xxxx
-    Name: xxxx
-```
-
-```golang
-//lables file
-Lables:
+monitorSystem:
+    es:
+        Host: xxxx
+        Port: xxxx
+        DocId: xxxx
+        DocType: xxxx
+        Interval: 10s
+    prometheus:
+        Namespace: xxx
+        Subsystemp: xxxx
+        Help: xxxx
+        Name: xxxx
+lables:
     httpCode
     httpMethod
 ```
 
-
+```
 
 ```golang 
 //use
