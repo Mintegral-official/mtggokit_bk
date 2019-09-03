@@ -6,9 +6,10 @@ metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,s
 
 ```golang 
 //path: /project/conf/config
-es : true //开关设定
-log : false
-prometheus: true
+open:
+    es : true //开关设定
+    log : false
+    prometheus: true
 
 monitorSystem:
     es:
