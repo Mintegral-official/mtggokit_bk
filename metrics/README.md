@@ -16,30 +16,33 @@ esConfig:
     DocId: xxxx
     DocType: xxxx
     Interval: 10s
-    Lables:
-        httpCode
-        httpMethod
-
-logConfig:
-    Lables:
-        httpCode
 
 prometheusConfig:
     Namespace: xxx
     Subsystemp: xxxx
     Help: xxxx
     Name: xxxx
-    Lables:
-        httpCode
-        httpMethod
 ```
+
+```golang
+//lables file
+Lables:
+    httpCode
+    httpMethod
+```
+
+
 
 ```golang 
 //use
+import (
+    "log"
+)
 func main() {
+    var logger *log.Logger
     var multiCount multi.Counter
-    multiCount = multi.NewCounter("/project/conf/config")
-    multiCount.Add(1)
+    multiCount = multi.NewCounter("/project/conf/config", logger)
+    multiCount.with("httpCode":"200","httpMethod":"POST").Add(1)
 }
 
 ```
