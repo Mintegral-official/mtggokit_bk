@@ -2,17 +2,15 @@ package container
 
 import (
 	"errors"
-	"sync"
 )
 
 // 双bufMap, 仅提供Get/LoadBase接口
-type BufferedMap struct {
+type BufferedMapContainer struct {
 	innerData *map[interface{}]interface{}
-	mutex     sync.Mutex
 	ErrorNum  int
 }
 
-func (bm *BufferedMap) Get(key MapKey) (interface{}, error) {
+func (bm *BufferedMapContainer) Get(key MapKey) (interface{}, error) {
 	data, in := (*bm.innerData)[key.Value()]
 	if !in {
 		return nil, errors.New("Not exist")
@@ -20,7 +18,7 @@ func (bm *BufferedMap) Get(key MapKey) (interface{}, error) {
 	return data, nil
 }
 
-func (bm *BufferedMap) LoadBase(iterator DataIterator) error {
+func (bm *BufferedMapContainer) LoadBase(iterator DataIterator) error {
 	bm.ErrorNum = 0
 	tmpM := make(map[interface{}]interface{})
 	for iterator.HasNext() {
@@ -31,19 +29,17 @@ func (bm *BufferedMap) LoadBase(iterator DataIterator) error {
 		}
 		tmpM[k.Value()] = v
 	}
-	bm.mutex.Lock()
 	bm.innerData = &tmpM
-	defer bm.mutex.Unlock()
 	return nil
 }
 
-func (bm *BufferedMap) Set(key MapKey, value interface{}) error {
+func (bm *BufferedMapContainer) Set(key MapKey, value interface{}) error {
 	return errors.New("not implement")
 }
 
-func (bm *BufferedMap) Del(key MapKey, value interface{}) {
+func (bm *BufferedMapContainer) Del(key MapKey, value interface{}) {
 }
 
-func (bm *BufferedMap) LoadInc(iterator DataIterator) error {
+func (bm *BufferedMapContainer) LoadInc(iterator DataIterator) error {
 	return errors.New("not implement")
 }

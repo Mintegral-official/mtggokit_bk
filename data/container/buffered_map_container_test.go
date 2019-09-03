@@ -71,15 +71,15 @@ func (this *TestIntDataIter) Next() (DataMode, MapKey, interface{}, error) {
 }
 
 func TestBufferedMap_Get(t *testing.T) {
-	convey.Convey("Test BufferedMap Get", t, func() {
-		bm := BufferedMap{}
+	convey.Convey("Test BufferedMapContainer Get", t, func() {
+		bm := BufferedMapContainer{}
 		convey.So(bm.LoadBase(NewTestDataIter([]string{})), convey.ShouldBeNil)
 		convey.So(bm.ErrorNum, convey.ShouldEqual, 0)
 		convey.So(len(*bm.innerData), convey.ShouldEqual, 0)
 	})
 
-	convey.Convey("Test BufferedMap Get", t, func() {
-		bm := BufferedMap{}
+	convey.Convey("Test BufferedMapContainer Get", t, func() {
+		bm := BufferedMapContainer{}
 		convey.So(bm.LoadBase(NewTestDataIter([]string{
 			"1\t2",
 			"a\tb",
@@ -95,8 +95,8 @@ func TestBufferedMap_Get(t *testing.T) {
 		convey.So(v, convey.ShouldEqual, "b")
 	})
 
-	convey.Convey("Test BufferedMap Get", t, func() {
-		bm := BufferedMap{}
+	convey.Convey("Test BufferedMapContainer Get", t, func() {
+		bm := BufferedMapContainer{}
 		convey.So(bm.LoadBase(NewTestIntDataIter([]string{
 			"1\t2",
 			"4\tb",
