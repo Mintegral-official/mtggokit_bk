@@ -3,7 +3,7 @@ package bifrost
 import (
 	"container/heap"
 	"context"
-	"github.com/Mintegral-official/mtggokit/data/bifrost/streamer"
+	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
 	"time"
 )
 

@@ -3,7 +3,7 @@ package streamer
 import (
 	"bufio"
 	"context"
-	"github.com/Mintegral-official/mtggokit/data/container"
+	"github.com/Mintegral-official/mtggokit/bifrost/container"
 	"github.com/easierway/concurrent_map"
 	"github.com/pkg/errors"
 	"os"
@@ -41,9 +41,9 @@ func NewFileStreamer(cfg *FileStreamerCfg) (*FileStreamer, error) {
 		cfg:        cfg,
 		dataParser: &DefaultTextParser{},
 	}
-	f, err := os.Open(cfg.Path)
+	f, err := os.Open(Path)
 	if err != nil {
-		return nil, errors.Wrap(err, "File["+cfg.Path+"]")
+		return nil, errors.Wrap(err, "File["+Path+"]")
 	}
 	fs.f = f
 	runtime.SetFinalizer(fs, DestroyFileStreamer)
@@ -60,19 +60,19 @@ func (fs *FileStreamer) HasNext() bool {
 }
 
 func (fs *FileStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
-	m, k, v, e := fs.dataParser.Parse([]byte(fs.scan.Text()))
+	m, k, v, e := Parse([]byte(fs.scan.Text()))
 	return m, k, v, e
 }
 
 func (fs *FileStreamer) UpdateData(ctx *context.Context) error {
-	switch fs.cfg.Mode {
+	switch Mode {
 	case "static":
 	case "dynamic":
 	case "increase":
 		if fs.f != nil {
 			_ = fs.f.Close()
 		}
-		f, err := os.Open(fs.cfg.Path)
+		f, err := os.Open(Path)
 		if err != nil {
 			return err
 		}
@@ -80,7 +80,7 @@ func (fs *FileStreamer) UpdateData(ctx *context.Context) error {
 		_, _ = fs.f.Seek(0, 0)
 		return fs.container.LoadBase(fs)
 	default:
-		return errors.New("not support mode[" + fs.cfg.Mode + "]")
+		return errors.New("not support mode[" + Mode + "]")
 	}
 
 	return nil

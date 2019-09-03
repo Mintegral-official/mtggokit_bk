@@ -2,7 +2,7 @@ package streamer
 
 import (
 	"context"
-	"github.com/Mintegral-official/mtggokit/data/container"
+	"github.com/Mintegral-official/mtggokit/bifrost/container"
 )
 
 type DataStreamer interface {

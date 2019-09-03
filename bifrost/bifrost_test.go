@@ -3,8 +3,8 @@ package bifrost
 import (
 	"context"
 	"fmt"
-	"github.com/Mintegral-official/mtggokit/data/bifrost/streamer"
-	"github.com/Mintegral-official/mtggokit/data/container"
+	"github.com/Mintegral-official/mtggokit/bifrost/container"
+	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
 	"github.com/smartystreets/goconvey/convey"
 	"testing"
 	"time"
