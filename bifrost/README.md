@@ -10,6 +10,28 @@ Bifrost取自北欧神话中是连结阿斯加德（Asgard）和 米德加尔特
 
 用户可以通过简单的配置，使用该工具将本地文件、数据库中的数据加载到内存中。也支持自定义数据源，满足复杂的数据依赖关系和业务需求。
 
+Example:
+
+``````go
+	// init
+	bifrost := bifrost.NewBifrost() // new a bifronst object
+
+  // Register streamer
+	s, _ := streamer.NewLocalFileStreamer(&streamer.FileStreamerCfg{
+		Name:       "example1",
+		Path:       "a.txt",
+		Interval:   60,
+		IsSync:     true,
+		DataParser: &streamer.DefaultTextParser{},
+	})
+	c := &container.BufferedMapContainer{}  
+	s.SetContainer(c)
+	_ = s.UpdateData(context.Background()) // 启动更新数据
+
+	// use
+	value, err := bifrost.Get("exmaple1", container.StrKey("key"))
+``````
+
 # 架构设计
 
 ![flow_arch](pic/flow_arch.png)
@@ -22,7 +44,7 @@ Bifrost取自北欧神话中是连结阿斯加德（Asgard）和 米德加尔特
 
 ## Bifrost UML图
 
-![Bifrost UML图](pic/bifront_arch.png)
+![Bifrost UML图](pic/bifrost_uml.png)
 
 Bifrost有三个组件
 
@@ -55,7 +77,7 @@ const (
 // 数据迭代器
 type DataIterator interface {
 	HasNext() bool
-	Next() (DataMode, MapKey, interface{})
+	Next() (DataMode, MapKey, interface{}, error)
 }
 
 // key of the map, because of go-lang not support generic type，
@@ -66,30 +88,39 @@ type MapKey interface {
 }
 
 type Container interface {
-   Get(key MapKey) (interface{}, error)
-   // 如果key相同， 会覆盖写
-   Set(key MapKey, value interface{}) error
-   Del(key MapKey, value interface{}) error
+   Get(MapKey) (interface{}, error)
+   Set(MapKey, interface{}) error
+   Del(MapKey, interface{}) error
 
    //全量更新
-   LoadBase(dataIter DataIterator) error
+   LoadBase(DataIterator) error
    // 增量更新
-   LoadInc(dataIter DataIterator) error
+   LoadInc(DataIterator) error
 }
 ```
 
-### KvMapContainer
+### BufferedMapContainer
 
 1. 全量更新采用双buffer机制
-2. 采用分桶加锁的方式实现多线程读写安全
-3. 增量更新遇到相同的key，最新的数据生效
+2. 不支持增量更新
 
-### KListMapContainer
+### BlockingMapContainer
 
-1. 全量更新采用双Buffer机制
-2. 采用分桶加锁的方式实现多线程读写安全
-3. 更新时遇到相同的key会合并到同一个list中
-4. 删除时只会删除key,value都相等的字段
+1. 采用分桶加锁的方式实现多线程读写安全, 兼顾功能与效率
+2. 数据初始化时全量更新一次，后续只有增量更新
+3. 更新时遇到相同的key会覆盖写
+
+``````go
+// 创建一个BlockingMapContainer
+bmc := container.NewBlockingMapContainer(bucket)
+``````
+
+### BufferedKListContainer
+
+1. 更新时遇到相同的key会合并到同一个list中
+2. 全量更新采用双Buffer机制
+3. 不支持增量更新
+4. 不会删除已更新的数据
 
 # Streamer
 
@@ -97,7 +128,7 @@ streamer是一个数据源的接口，设计如下
 
 ```go
 type DataParser interface {
-	Parse([]byte) (container.DataMode, container.MapKey, interface{}, error)
+  Parse([]byte, interface{}) (container.DataMode, container.MapKey, interface{}, error)
 }
 
 type DataStreamer interface {
@@ -119,35 +150,59 @@ DataParser是一个数据解析的接口，需要用户自定义
 1. static 不更新
 2. dynamic 动态全量更新
 3. increase  全量更新一次，之后动态更定增量
-4. dynInc 定时全量更细，动态增量更新
 
 streamer之前没有依赖关系，每个streamer维护自己的更新进度即可，不需要统一的模块维护
 
 ### 数据更新方式
 
-1. sync 同步更新
-2. async  异步更新
+1. sync 同步更新, 第一次全量更新使用同步的方式
+2. async  异步更新， 第一次全量更新使用异步的方式
 
 ## LocalFileStreamer
 
 FileStreamer代表本地文件文件
 
-1. 全量更新
-2. 增量更新 (一期暂不支持)
-3. 绑定Parser
-4. 错误处理
-   1. 回调方式（）
-   2. 打日志
-   3. 出现错误是否终止本次更新（用户可配置）
-5. 采用主动更新的方式
+示例：
+
+```go
+s, _ := streamer.NewFileStreamer(&streamer.FileStreamerCfg{
+   Name:       "example1",
+   Path:       "a.txt",
+   Interval:   60,
+   IsSync:     true,
+   DataParser: &streamer.DefaultTextParser{},
+   UserData:   nil,
+})
+```
 
 ## MongoStreamer
 
 MongoStreamer对应对应mongo数据里面的一张表。
 
-1. 支持全量增量（需用户定义全量、增量的语句）
+1. 支持全量增量更新（需用户定义全量、增量的语句）
 2. 全量增量的更新时间
 3. 增量语句的更新
+
+示例：
+
+```go
+ms := NewMongoStreamer(&MongoStreamerCfg{
+   Name:        "mongo_test",
+   UpdatMode:   Dynamic,
+   IncInterval: 60,
+   IsSync:      true,
+   IP:          "127.0.0.1",
+   Port:        21017,
+   BaseParser:  &DefaultTextParser{},
+   IncParser:   &DefaultTextParser{},
+   BaseQuery:   "mongo base query",
+   IncQuery:    "mongo inc query",
+   UserData:    "user defined data",
+   OnIncFinish: func(userData interface{}) interface{} {
+      return "nfew inc base query"
+   },
+})
+```
 
 ## BifrostStreamer
 
@@ -157,16 +212,27 @@ MongoStreamer对应对应mongo数据里面的一张表。
 
 在线模式：Bifrost会根据streamer的名字，去对应的地址拉取全量或增量数据，同时更新到container中。
 
-### 离线模块基准、增量生成规则：
+### 离线模式 
+
+#### 基准、增量生成规则：
 
 1. 定期dump基准文件、增量文件的序号，更新时间
 2. 实时写增量文件，内容包含streamerName, 需要，更新时间，更新内容
 
 离线模块与线上模块交互：
 
-1. 基准采用文件方式
+1. 基准采用文件方式， 文件格式使用Gob序列化方式
 
-2. 增量采用socket方式， 使用rpcx框架
+   ``````go
+   type FileStruct struct {
+   	Name        string
+   	UpdateTime  int64
+   	DataVersion int
+   	Data        map[container.MapKey]interface{}
+   }
+   ``````
+
+2. 增量采用socket方式， 使用rpc框架
 
    接口设计
 
@@ -185,6 +251,27 @@ MongoStreamer对应对应mongo数据里面的一张表。
      Records []Record
    }
    ```
+
+   增量既可以存放在内存中，也可以dump到磁盘中
+
+3. 示例
+
+   ``````go
+   	bs := NewBiFrostStreamer(&BiFrostStreamerCfg{
+   		Name:         "BiFrostStreamer",
+   		Version:      0,
+   		Ip:           "",
+   		Port:         1111,
+   		BaseFilePath: "",
+   		Interval:     60,
+   		IsSync:       true,
+   		IsOnline:     false,
+       WriteFile:    false,
+       CacheSize:    10000,
+   	})
+   ``````
+
+
 
 ### Streamer与Container的关系
 

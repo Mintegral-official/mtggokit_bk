@@ -1,12 +1,14 @@
 package streamer
 
-import "github.com/Mintegral-official/mtggokit/bifrost/container"
+import (
+	"github.com/Mintegral-official/mtggokit/bifrost/container"
+)
 
-type BiFrostStreamerCfg struct {
-	Name         string
-	Version      int //数据格式的版本
-	IpPort       string
-	BaseFilePath string
+type FileStruct struct {
+	Name        string
+	UpdateTime  int64
+	DataVersion int
+	Data        map[container.MapKey]interface{}
 }
 
 type BiFrostStreamer struct {

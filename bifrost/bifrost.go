@@ -14,11 +14,10 @@ type Logger interface {
 
 type Bifrost struct {
 	DataStreamers map[string]streamer.DataStreamer
-	sched         Sched
 	logger        *Logger
 }
 
-func NewLoader() *Bifrost {
+func NewBifrost() *Bifrost {
 	return &Bifrost{
 		DataStreamers: make(map[string]streamer.DataStreamer),
 	}

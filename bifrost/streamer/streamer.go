@@ -8,6 +8,5 @@ import (
 type DataStreamer interface {
 	SetContainer(container.Container)
 	GetContainer() container.Container
-	GetSchedInfo() *SchedInfo
 	UpdateData(ctx context.Context) error
 }
