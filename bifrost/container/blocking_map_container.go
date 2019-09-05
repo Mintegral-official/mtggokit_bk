@@ -1,6 +1,7 @@
 package container
 
 import (
+	"fmt"
 	"github.com/easierway/concurrent_map"
 	"github.com/pkg/errors"
 )
@@ -9,13 +10,16 @@ import (
 type BlockingMapContainer struct {
 	innerData    *concurrent_map.ConcurrentMap
 	numPartision int
-	ErrorNum     int
+	errorNum     int64
+	totalNum     int64
+	Tolerate     float64
 }
 
-func CreateBlockingMapContainer(numPartision int) *BlockingMapContainer {
+func CreateBlockingMapContainer(numPartision int, tolerate float64) *BlockingMapContainer {
 	return &BlockingMapContainer{
 		innerData:    concurrent_map.CreateConcurrentMap(numPartision),
 		numPartision: numPartision,
+		Tolerate:     tolerate,
 	}
 }
 
@@ -38,11 +42,13 @@ func (bm *BlockingMapContainer) Del(key MapKey, value interface{}) {
 
 func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
 	tmpM := concurrent_map.CreateConcurrentMap(bm.numPartision)
-	bm.ErrorNum = 0
+	bm.errorNum = 0
+	bm.totalNum = 0
 	for iterator.HasNext() {
 		m, k, v, e := iterator.Next()
+		bm.totalNum++
 		if e != nil {
-			bm.ErrorNum++
+			bm.errorNum++
 			continue
 		}
 		switch m {
@@ -52,6 +58,13 @@ func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
 			tmpM.Del(k)
 		}
 	}
+	if bm.totalNum == 0 {
+		bm.totalNum = 1
+	}
+	f := float64(bm.errorNum) / float64(bm.totalNum)
+	if f > bm.Tolerate {
+		return errors.New(fmt.Sprintf("LoadBase error, tolerate[%f], err[%f]", bm.Tolerate, f))
+	}
 	bm.innerData = tmpM
 	return nil
 }
@@ -59,8 +72,9 @@ func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
 func (bm *BlockingMapContainer) LoadInc(iterator DataIterator) error {
 	for iterator.HasNext() {
 		m, k, v, e := iterator.Next()
+		bm.totalNum++
 		if e != nil {
-			bm.ErrorNum++
+			bm.errorNum++
 			continue
 		}
 		switch m {
@@ -69,6 +83,13 @@ func (bm *BlockingMapContainer) LoadInc(iterator DataIterator) error {
 		case DataModeDel:
 			bm.Del(k, v)
 		}
+	}
+	if bm.totalNum == 0 {
+		bm.totalNum = 1
+	}
+	f := float64(bm.errorNum) / float64(bm.totalNum)
+	if f > bm.Tolerate {
+		return errors.New(fmt.Sprintf("LoadInc error, tolerate[%f], err[%f]", bm.Tolerate, f))
 	}
 	return nil
 }

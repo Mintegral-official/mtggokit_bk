@@ -4,61 +4,93 @@ import (
 	"bufio"
 	"context"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
+	//"github.com/Mintegral-official/mtggokit/bifrost/log"
 	"github.com/pkg/errors"
 	"os"
+	"time"
 )
 
-type FileStreamer struct {
+type LocalFileStreamer struct {
 	container  container.Container
 	cfg        *FileStreamerCfg
-	f          *os.File
 	scan       *bufio.Scanner
 	updateMode UpdatMode
+	//Logger     log.Logger
+	hasInit bool
 }
 
-func NewFileStreamer(cfg *FileStreamerCfg) (*FileStreamer, error) {
-	fs := &FileStreamer{
+func NewFileStreamer(cfg *FileStreamerCfg) *LocalFileStreamer {
+	fs := &LocalFileStreamer{
 		cfg: cfg,
+		//Logger: log,
 	}
-	return fs, nil
+	return fs
 }
 
-func (fs *FileStreamer) SetContainer(container container.Container) {
+func (fs *LocalFileStreamer) SetContainer(container container.Container) {
 	fs.container = container
 }
 
-func (fs *FileStreamer) GetContainer() container.Container {
+func (fs *LocalFileStreamer) GetContainer() container.Container {
 	return fs.container
 }
 
-func (fs *FileStreamer) HasNext() bool {
-	return fs.scan.Scan()
+func (fs *LocalFileStreamer) GetSchedInfo() *SchedInfo {
+	return &SchedInfo{
+		TimeInterval: fs.cfg.Interval,
+	}
 }
 
-func (fs *FileStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
+func (fs *LocalFileStreamer) HasNext() bool {
+	return fs.scan != nil && fs.scan.Scan()
+}
+
+func (fs *LocalFileStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
 	m, k, v, e := fs.cfg.DataParser.Parse([]byte(fs.scan.Text()), nil)
 	return m, k, v, e
 }
 
-func (fs *FileStreamer) UpdateData(ctx context.Context) error {
-	switch fs.updateMode {
-	case Static:
-	case Dynamic:
-		if fs.f != nil {
-			_ = fs.f.Close()
-		}
-		f, err := os.Open(fs.cfg.Path)
+func (fs *LocalFileStreamer) UpdateData(ctx context.Context) error {
+	if fs.cfg.IsSync {
+		err := fs.updateData(ctx)
 		if err != nil {
 			return err
 		}
-		fs.f = f
-		_, _ = fs.f.Seek(0, 0)
+	}
+	go func() {
+		for {
+			inc := time.After(time.Duration(fs.cfg.Interval) * time.Second)
+			select {
+			case <-inc:
+				if err := fs.updateData(ctx); err != nil {
+					//log.New().Infof("streamer[%s] LoadInc error[%s]", fs.cfg.Name, err.Error())
+
+				}
+			}
+		}
+	}()
+	return nil
+}
+
+func (fs *LocalFileStreamer) updateData(ctx context.Context) error {
+
+	switch fs.updateMode {
+	case Static, Dynamic:
+		if fs.hasInit && fs.updateMode == Static {
+			return nil
+		}
+
+		f, err := os.Open(fs.cfg.Path)
+		defer func() { _ = f.Close() }()
+		if err != nil {
+			return err
+		}
+		fs.scan = bufio.NewScanner(f)
 		return fs.container.LoadBase(fs)
-	case Increase:
+	case Increment:
 	case DynInc:
 	default:
 		return errors.New("not support mode[" + fs.updateMode.toString() + "]")
 	}
 	return nil
-
 }

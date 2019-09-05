@@ -12,7 +12,7 @@ func main() {
 
 	// init
 	bifrost := bifrost.NewBifrost() // new a bifronst object
-	s, _ := streamer.NewFileStreamer(&streamer.FileStreamerCfg{
+	s := streamer.NewFileStreamer(&streamer.FileStreamerCfg{
 		Name:       "example1",
 		Path:       "a.txt",
 		Interval:   60,

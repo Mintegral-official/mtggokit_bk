@@ -3,6 +3,7 @@ package bifrost
 import (
 	"context"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
+	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
 	"github.com/smartystreets/goconvey/convey"
 	"testing"
 )
@@ -16,6 +17,10 @@ func (*FakeStreamer) SetContainer(container.Container) {
 }
 
 func (*FakeStreamer) GetContainer() container.Container {
+	return nil
+}
+
+func (*FakeStreamer) GetSchedInfo() *streamer.SchedInfo {
 	return nil
 }
 

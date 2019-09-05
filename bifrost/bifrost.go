@@ -2,24 +2,19 @@ package bifrost
 
 import (
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
+	"github.com/Mintegral-official/mtggokit/bifrost/log"
 	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
 	"github.com/pkg/errors"
 )
 
-// Logger for log
-type Logger interface {
-	Infof(format string, v ...interface{})
-	Warnf(format string, v ...interface{})
-}
-
 type Bifrost struct {
-	DataStreamers map[string]streamer.DataStreamer
-	logger        *Logger
+	DataStreamers map[string]streamer.Streamer
+	logger        *log.Logger
 }
 
 func NewBifrost() *Bifrost {
 	return &Bifrost{
-		DataStreamers: make(map[string]streamer.DataStreamer),
+		DataStreamers: make(map[string]streamer.Streamer),
 	}
 }
 
@@ -35,7 +30,7 @@ func (l *Bifrost) Get(name string, key container.MapKey) (interface{}, error) {
 	return c.Get(key)
 }
 
-func (l *Bifrost) Register(name string, streamer streamer.DataStreamer) error {
+func (l *Bifrost) Register(name string, streamer streamer.Streamer) error {
 	if _, ok := l.DataStreamers[name]; ok {
 		return errors.New("streamer[" + name + "] has already exist")
 	}
@@ -43,7 +38,7 @@ func (l *Bifrost) Register(name string, streamer streamer.DataStreamer) error {
 	return nil
 }
 
-func (l *Bifrost) GetStreamer(name string) (streamer.DataStreamer, error) {
+func (l *Bifrost) GetStreamer(name string) (streamer.Streamer, error) {
 	s, ok := l.DataStreamers[name]
 	if !ok {
 		return nil, errors.New("not found streamer[" + name + "]")

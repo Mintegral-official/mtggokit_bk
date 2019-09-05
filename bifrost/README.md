@@ -4,7 +4,7 @@ Bifrost取自北欧神话中是连结阿斯加德（Asgard）和 米德加尔特
 
 在这里寓意“数据的传输道路”，它的功能是将远端的数据同步到本机内存中，是一个数据生产、传输、加载的工具。
 
-* 数据生产：支持多种数据源，例如：本地文件、远程文件、mongo等。
+* 数据转化：支持多种数据源，例如：本地文件、远程文件、mongo等。
 * 数据传输：支持多种传输（文件、socket等）
 * 数据加载：支持多种内存模型（分层k-v, 分层k-list），满足用户的不同需求
 
@@ -13,24 +13,28 @@ Bifrost取自北欧神话中是连结阿斯加德（Asgard）和 米德加尔特
 Example:
 
 ``````go
-	// init
-	bifrost := bifrost.NewBifrost() // new a bifronst object
+// init
+bifrost := bifrost.NewBifrost() // new a bifronst object
 
-  // Register streamer
-	s, _ := streamer.NewLocalFileStreamer(&streamer.FileStreamerCfg{
-		Name:       "example1",
-		Path:       "a.txt",
-		Interval:   60,
-		IsSync:     true,
-		DataParser: &streamer.DefaultTextParser{},
-	})
-	c := &container.BufferedMapContainer{}  
-	s.SetContainer(c)
-	_ = s.UpdateData(context.Background()) // 启动更新数据
+// Register streamer
+s, _ := streamer.NewLocalFileStreamer(&streamer.FileStreamerCfg{
+  Name:       "example1",
+  Path:       "a.txt",
+  Interval:   60,
+  IsSync:     true,
+  DataParser: &streamer.DefaultTextParser{},
+})
+c := &container.BufferedMapContainer{}  
+s.SetContainer(c)
+bifrost.Register("exmaple1", s)
+_ = s.UpdateData(context.Background()) // 启动更新数据
 
-	// use
-	value, err := bifrost.Get("exmaple1", container.StrKey("key"))
+// use
+value, err := bifrost.Get("exmaple1", container.StrKey("key"))
+value, err := bifrost.Get("exmaple1", container.Int64(1))
 ``````
+
+
 
 # 架构设计
 
@@ -217,7 +221,7 @@ ms := NewMongoStreamer(&MongoStreamerCfg{
 #### 基准、增量生成规则：
 
 1. 定期dump基准文件、增量文件的序号，更新时间
-2. 实时写增量文件，内容包含streamerName, 需要，更新时间，更新内容
+2. 实时写增量文件，内容包含streamerName，更新时间，更新内容
 
 离线模块与线上模块交互：
 
@@ -285,3 +289,8 @@ Streamer代表数据源，Container则代表数据的内存组织方式。
 # For开发者
 
 Bifrost提供比较基础的container和streamer, 如不满足需要，可以自行开发，只要遵循支持设计接口即可
+
+
+
+# TODO:
+

@@ -5,8 +5,9 @@ import (
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
 )
 
-type DataStreamer interface {
+type Streamer interface {
 	SetContainer(container.Container)
 	GetContainer() container.Container
+	GetSchedInfo() *SchedInfo
 	UpdateData(ctx context.Context) error
 }

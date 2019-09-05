@@ -2,7 +2,6 @@ package container
 
 import (
 	"errors"
-	"fmt"
 )
 
 // 双bufMap, 仅提供Get/LoadBase接口
@@ -29,7 +28,6 @@ func (bm *BufferedKListContainer) LoadBase(iterator DataIterator) error {
 			continue
 		}
 		res, in := tmpM[k.Value()]
-		fmt.Println("abcdefg: ", k, v, res, in)
 		if in {
 			res = append(res, v)
 			tmpM[k.Value()] = res

@@ -2,12 +2,15 @@ package container
 
 import (
 	"errors"
+	"fmt"
 )
 
 // 双bufMap, 仅提供Get/LoadBase接口
 type BufferedMapContainer struct {
 	innerData *map[interface{}]interface{}
-	ErrorNum  int
+	errorNum  int64
+	totalNum  int64
+	Tolerate  float64
 }
 
 func (bm *BufferedMapContainer) Get(key MapKey) (interface{}, error) {
@@ -19,15 +22,24 @@ func (bm *BufferedMapContainer) Get(key MapKey) (interface{}, error) {
 }
 
 func (bm *BufferedMapContainer) LoadBase(iterator DataIterator) error {
-	bm.ErrorNum = 0
+	bm.errorNum = 0
+	bm.totalNum = 0
 	tmpM := make(map[interface{}]interface{})
 	for iterator.HasNext() {
 		_, k, v, e := iterator.Next()
+		bm.totalNum++
 		if e != nil {
-			bm.ErrorNum++
+			bm.errorNum++
 			continue
 		}
 		tmpM[k.Value()] = v
+	}
+	if bm.totalNum == 0 {
+		bm.totalNum = 1
+	}
+	f := float64(bm.errorNum) / float64(bm.totalNum)
+	if f > bm.Tolerate {
+		return errors.New(fmt.Sprintf("LoadBase error, tolerate[%f], err[%f]", bm.Tolerate, f))
 	}
 	bm.innerData = &tmpM
 	return nil

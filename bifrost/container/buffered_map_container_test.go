@@ -74,7 +74,7 @@ func TestBufferedMap_Get(t *testing.T) {
 	convey.Convey("Test BufferedMapContainer Get", t, func() {
 		bm := BufferedMapContainer{}
 		convey.So(bm.LoadBase(NewTestDataIter([]string{})), convey.ShouldBeNil)
-		convey.So(bm.ErrorNum, convey.ShouldEqual, 0)
+		convey.So(bm.errorNum, convey.ShouldEqual, 0)
 		convey.So(len(*bm.innerData), convey.ShouldEqual, 0)
 	})
 
@@ -84,7 +84,7 @@ func TestBufferedMap_Get(t *testing.T) {
 			"1\t2",
 			"a\tb",
 		})), convey.ShouldBeNil)
-		convey.So(bm.ErrorNum, convey.ShouldEqual, 0)
+		convey.So(bm.errorNum, convey.ShouldEqual, 0)
 		convey.So(len(*bm.innerData), convey.ShouldEqual, 2)
 		v, e := bm.Get(StrKey("1"))
 		convey.So(e, convey.ShouldBeNil)
@@ -101,7 +101,7 @@ func TestBufferedMap_Get(t *testing.T) {
 			"1\t2",
 			"4\tb",
 		})), convey.ShouldBeNil)
-		convey.So(bm.ErrorNum, convey.ShouldEqual, 0)
+		convey.So(bm.errorNum, convey.ShouldEqual, 0)
 		convey.So(len(*bm.innerData), convey.ShouldEqual, 2)
 		v, e := bm.Get(I64Key(1))
 		convey.So(e, convey.ShouldBeNil)
