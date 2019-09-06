@@ -7,25 +7,22 @@ metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,s
 ```golang 
 //path: /project/conf/config
 open:
-    es : true //开关设定
-    log : false
+    es: true //开关设定
+    log: false
     prometheus: true
 
 monitorSystem:
-    es:
-        Host: xxxx
-        Port: xxxx
-        DocId: xxxx
-        DocType: xxxx
-        Interval: 10s
-    prometheus:
+    default:
         Namespace: xxx
         Subsystemp: xxxx
         Help: xxxx
         Name: xxxx
-lables:
-    httpCode
-    httpMethod
+    es:
+        Host: xxxx
+        Port: xxxx
+        Index: xxxx
+        Type: xxxx
+        Interval: 10s
 ```
 
 ```
@@ -38,11 +35,11 @@ import (
 func main() {
     var logger *log.Logger
     var multiCount multi.Counter
-    multiCount = multi.NewCounter("/project/conf/config", logger)
-    multiCount.with("httpCode":"200","httpMethod":"POST").Add(1)
+    multiCount = multi.NewCounter("/project/conf/config", lablesc[]string)
+    multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(1)
 }
-
 ```
+
 ## 总体框架
 
 ![counter](img/总体框架.png)
