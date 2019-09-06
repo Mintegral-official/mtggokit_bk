@@ -9,7 +9,7 @@ import (
 
 type Bifrost struct {
 	DataStreamers map[string]streamer.Streamer
-	logger        *log.Logger
+	logger        *log.BiLogger
 }
 
 func NewBifrost() *Bifrost {

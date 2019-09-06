@@ -1,6 +1,8 @@
 package streamer
 
-type FileStreamerCfg struct {
+import "github.com/Mintegral-official/mtggokit/bifrost/log"
+
+type LocalFileStreamerCfg struct {
 	Name       string
 	Path       string
 	UpdatMode  UpdatMode
@@ -8,4 +10,5 @@ type FileStreamerCfg struct {
 	IsSync     bool
 	DataParser DataParser
 	UserData   interface{}
+	Logger     log.BiLogger
 }

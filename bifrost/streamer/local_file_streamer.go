@@ -4,25 +4,22 @@ import (
 	"bufio"
 	"context"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
-	//"github.com/Mintegral-official/mtggokit/bifrost/log"
 	"github.com/pkg/errors"
 	"os"
 	"time"
 )
 
 type LocalFileStreamer struct {
-	container  container.Container
-	cfg        *FileStreamerCfg
-	scan       *bufio.Scanner
-	updateMode UpdatMode
-	//Logger     log.Logger
-	hasInit bool
+	container container.Container
+	cfg       *LocalFileStreamerCfg
+	scan      *bufio.Scanner
+	hasInit   bool
+	modTime   time.Time
 }
 
-func NewFileStreamer(cfg *FileStreamerCfg) *LocalFileStreamer {
+func NewFileStreamer(cfg *LocalFileStreamerCfg) *LocalFileStreamer {
 	fs := &LocalFileStreamer{
 		cfg: cfg,
-		//Logger: log,
 	}
 	return fs
 }
@@ -61,10 +58,12 @@ func (fs *LocalFileStreamer) UpdateData(ctx context.Context) error {
 		for {
 			inc := time.After(time.Duration(fs.cfg.Interval) * time.Second)
 			select {
+			case <-ctx.Done():
+				fs.cfg.Logger.Infof("streamer[%s] UpdateData Finish", fs.cfg.Name)
+				return
 			case <-inc:
 				if err := fs.updateData(ctx); err != nil {
-					//log.New().Infof("streamer[%s] LoadInc error[%s]", fs.cfg.Name, err.Error())
-
+					fs.cfg.Logger.Warnf("streamer[%s] LoadInc error[%s]", fs.cfg.Name, err.Error())
 				}
 			}
 		}
@@ -74,9 +73,9 @@ func (fs *LocalFileStreamer) UpdateData(ctx context.Context) error {
 
 func (fs *LocalFileStreamer) updateData(ctx context.Context) error {
 
-	switch fs.updateMode {
+	switch fs.cfg.UpdatMode {
 	case Static, Dynamic:
-		if fs.hasInit && fs.updateMode == Static {
+		if fs.hasInit && fs.cfg.UpdatMode == Static {
 			return nil
 		}
 
@@ -85,12 +84,17 @@ func (fs *LocalFileStreamer) updateData(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		fs.scan = bufio.NewScanner(f)
-		return fs.container.LoadBase(fs)
+		stat, _ := f.Stat()
+		modTime := stat.ModTime()
+		if modTime.After(fs.modTime) {
+			fs.modTime = modTime
+			fs.scan = bufio.NewScanner(f)
+			return fs.container.LoadBase(fs)
+		}
 	case Increment:
 	case DynInc:
 	default:
-		return errors.New("not support mode[" + fs.updateMode.toString() + "]")
+		return errors.New("not support mode[" + fs.cfg.UpdatMode.toString() + "]")
 	}
 	return nil
 }

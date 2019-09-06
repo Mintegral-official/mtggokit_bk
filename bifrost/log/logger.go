@@ -1,7 +1,9 @@
 package log
 
 // Logger for log
-type Logger interface {
-	Infof(format string, v ...interface{})
-	Warnf(format string, v ...interface{})
+type BiLogger interface {
+	Info(args ...interface{})
+	Warn(args ...interface{})
+	Infof(format string, args ...interface{})
+	Warnf(format string, args ...interface{})
 }

@@ -11,8 +11,8 @@ import (
 func main() {
 
 	// init
-	bifrost := bifrost.NewBifrost() // new a bifronst object
-	s := streamer.NewFileStreamer(&streamer.FileStreamerCfg{
+	Bifrost := bifrost.NewBifrost() // new a bifronst object
+	s := streamer.NewFileStreamer(&streamer.LocalFileStreamerCfg{
 		Name:       "example1",
 		Path:       "a.txt",
 		Interval:   60,
@@ -23,12 +23,12 @@ func main() {
 	c := &container.BufferedMapContainer{}
 	s.SetContainer(c)
 	_ = s.UpdateData(context.Background())
-	if err := bifrost.Register("example1", s); err != nil {
+	if err := Bifrost.Register("example1", s); err != nil {
 		fmt.Println("Register error", err.Error())
 	}
 
 	// use
-	value, err := bifrost.Get("exmaple1", container.StrKey("key"))
+	value, err := Bifrost.Get("exmaple1", container.StrKey("key"))
 	if err != nil {
 		fmt.Println(value)
 	}
