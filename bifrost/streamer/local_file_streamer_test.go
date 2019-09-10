@@ -17,6 +17,7 @@ func TestLocalFileStreamer_UpdateData(t *testing.T) {
 	curPath, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	fmt.Println(curPath)
 	filename := filepath.Join(curPath, "aaa")
+	fmt.Println("FilePath:" + filename)
 	convey.Convey("TestLocalFileStreamer_UpdateData", t, func() {
 		lfs := NewFileStreamer(&LocalFileStreamerCfg{
 			Name:       "test1",
