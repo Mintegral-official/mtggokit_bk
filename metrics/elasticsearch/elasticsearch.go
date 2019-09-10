@@ -5,7 +5,7 @@
 package elasticsearch
 
 import (
-    "prometheus"
+    "./prometheus"
     "../metrics"
     "../internal/lv"
 )

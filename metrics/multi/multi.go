@@ -8,7 +8,7 @@ import (
     "../metrics"
     "path/filepath"
     stdprometheus "github.com/prometheus/client_golang/prometheus"
-    stdelasticsearch "xxxxxxxxxxxxxxxxxxxxxxxx/elasticsearch"
+    stdelasticsearch "../elasticsearch"
     "github.com/spf13/viper"
 )
 
@@ -23,6 +23,7 @@ var monitorSystems = map[string]bool{
     "prometheus", false
 }
 
+// newCounter returns a multi-counter, wrapping the passed counters.
 func newCounter(v *viper.Viper, lables []string) Counter {
     path := ""
     multiCounter := Counter{}
@@ -30,23 +31,27 @@ func newCounter(v *viper.Viper, lables []string) Counter {
         Namespace: v.GetString("monitorSystem.default.Namespace"),
         Subsystem: v.GetString("monitorSystem.default.Subsystem"),
         Name:      v.GetString("monitorSystem.default.Name"),
-        Help:      v.GetString("monitorSystem.default.Help")
+        Help:      v.GetString("monitorSystem.default.Help"),
     }
     for system, _ := range monitorSystems {
         path = fmt.Sprintf("open.%s.", system)
-        monitorSystem[system] = v.GetString(path)
+        monitorSystem[system] = v.GetBool(path)
         if !monitorSystem[k] {
             continue
         }
         switch system {
             case "es":
-                multiCounter = append(multiCounter, elasticsearch.NewCounter())
+                esOpts := stdelasticsearch.CounterEsOpts{
+                    Host:  v.GetString("monitorSystem.es.Host"),
+                    Port:  v.GetString("monitorSystem.es.Port"),
+                    Index: v.GetString("monitorSystem.es.Index"),
+                    Type:  v.GetString("monitorSystem.es.Type"),
+                }
+                esCounter := elasticsearch.NewCounterFrom(opts, esOpts, lables)
+                multiCounter = append(multiCounter, esCounter)
                 break
             case "prometheus":
-                multiCounter = append(multiCounter, prometheus.NewCounter(opts, lables))
-                break
-            case "log":
-                multiCounter = append(multiCounter, log.NewCounter())
+                multiCounter = append(multiCounter, prometheus.NewCounterFrom(opts, lables))
                 break
         }
     }
@@ -56,7 +61,6 @@ func newCounter(v *viper.Viper, lables []string) Counter {
 // NewCounter returns a multi-counter, wrapping the passed counters.
 func NewCounter(fileName string, lables []string) Counter {
     var counters Counter
-    v := viper.New()
     cfgPath, cfgName := filepath.Split(fileName)
     end := 0
     for end = len(cfgName) - 1; end >= 0; end-- {
@@ -64,6 +68,7 @@ func NewCounter(fileName string, lables []string) Counter {
             break
         }
     }
+    v := viper.New()
     v.AddConfigPath(cfgPath)
     v.SetConfigName(cfgName[:end])
     v.SetConfigType("yaml")
@@ -73,10 +78,6 @@ func NewCounter(fileName string, lables []string) Counter {
     return newCounter(v, lables)
 }
 
-// newCounter returns a multi-counter, wrapping the passed counters.
-func newCounter(c ...metrics.Counter) Counter {
-    return Counter(c)
-}
 
 // Add implements counter.
 func (c Counter) Add(delta float64) {

@@ -1,0 +1,16 @@
+open:
+    es: true
+    log: false
+    prometheus: true
+monitorSystem:
+    default:
+        Namespace: "xxx"
+        Subsystemp: "xxxx"
+        Help: "xxxx"
+        Name: "xxxx"
+    es:
+        Host: "xxxx"
+        Port: "xxxx"
+        Index: "xxxx"
+        Type: "xxxx"
+        Interval: "10s"
