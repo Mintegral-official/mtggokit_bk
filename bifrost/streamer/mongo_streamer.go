@@ -7,7 +7,6 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"time"
 )
 
@@ -38,12 +37,12 @@ func NewMongoStreamer(mongoConfig *MongoStreamerCfg) (*MongoStreamer, error) {
 	}
 	streamer.client = client
 
-	if err = client.Ping(ctx, readpref.Primary()); err != nil {
-		if mongoConfig.Logger != nil {
-			mongoConfig.Logger.Warnf("mongo ping error, err=[%s]", err.Error())
-		}
-		return nil, err
-	}
+	//if err = client.Ping(ctx, readpref.Primary()); err != nil {
+	//	if mongoConfig.Logger != nil {
+	//		mongoConfig.Logger.Warnf("mongo ping error, err=[%s]", err.Error())
+	//	}
+	//	return nil, err
+	//}
 
 	streamer.collection = client.Database(mongoConfig.DB).Collection(mongoConfig.Collection)
 	if streamer.collection == nil {
@@ -92,7 +91,7 @@ func (ms *MongoStreamer) Next() (container.DataMode, container.MapKey, interface
 }
 
 func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
-	if ms.hasInit && ms.cfg.IsSync {
+	if !ms.hasInit && ms.cfg.IsSync {
 		if err := ms.loadBase(ctx); err != nil {
 			ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
 			return err
@@ -102,7 +101,7 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 		}
 	}
 	go func() {
-		if ms.hasInit {
+		if !ms.hasInit {
 			if err := ms.loadBase(ctx); err != nil {
 				ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
 			} else {
@@ -131,7 +130,7 @@ func (ms *MongoStreamer) loadBase(ctx context.Context) error {
 	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
 	cur, err := ms.collection.Find(c, ms.cfg.BaseQuery)
 	if err != nil {
-		ms.cfg.Logger.Warnf("read mongo error, base query[%s]", ms.cfg.BaseQuery)
+		ms.cfg.Logger.Warnf("streamer[%s]: loadBase error[%s]", ms.cfg.Name, err.Error())
 		return err
 	}
 
@@ -152,7 +151,7 @@ func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
 	cur, err := ms.collection.Find(c, ms.cfg.IncQuery)
 	if err != nil {
-		ms.cfg.Logger.Warnf("read mongo error, inc query[%s]", ms.cfg.IncQuery)
+		ms.cfg.Logger.Warnf("streamer[%s]: loadInc error[%s]", ms.cfg.Name, err.Error())
 		return err
 	}
 

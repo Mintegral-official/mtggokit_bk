@@ -6,6 +6,7 @@ import (
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
 	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"os"
 )
@@ -44,7 +45,9 @@ func main() {
 		UpdatMode:      streamer.Dynamic,
 		IncInterval:    60,
 		IsSync:         true,
-		URI:            "mongodb://127.0.0.1:21017",
+		URI:            "mongodb://13.2.8.190:27017",
+		DB:             "new_adn",
+		Collection:     "campaign",
 		ConnectTimeout: 100,
 		ReadTimeout:    20,
 		BaseParser:     &CampaignParser{},
@@ -52,6 +55,7 @@ func main() {
 		BaseQuery:      bson.M{},
 		IncQuery:       bson.M{},
 		UserData:       &UserData{},
+		Logger:         logrus.New(),
 		OnIncFinish: func(userData interface{}) interface{} {
 			return "nfew inc base query"
 		},
