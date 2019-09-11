@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"os"
+	"time"
 )
 
 type UserData struct {
@@ -18,7 +19,7 @@ type UserData struct {
 type CampaignInfo struct {
 	CampaignId   int64  `bson:"campaignId,omitempty"`
 	AdvertiserId *int32 `bson:"advertiserId,omitempty"`
-	Uptime       int64
+	Uptime       int64  `bson:"updated,omitempty"`
 }
 
 type CampaignParser struct {
@@ -35,7 +36,6 @@ func (cp *CampaignParser) Parse(data []byte, userData interface{}) (container.Da
 		fmt.Println("bson.Unmarsnal error:" + err.Error())
 	}
 	ud.Uptime = campaign.Uptime
-
 	return container.DataModeAdd, container.I64Key(campaign.CampaignId), &campaign, nil
 }
 
@@ -45,21 +45,31 @@ func main() {
 		UpdatMode:      streamer.Dynamic,
 		IncInterval:    60,
 		IsSync:         true,
-		URI:            "mongodb://13.2.8.190:27017",
+		URI:            "mongodb://13.250.108.190:27017",
 		DB:             "new_adn",
 		Collection:     "campaign",
-		ConnectTimeout: 100,
-		ReadTimeout:    20,
+		ConnectTimeout: 10000,
+		ReadTimeout:    2000,
 		BaseParser:     &CampaignParser{},
 		IncParser:      &CampaignParser{},
-		BaseQuery:      bson.M{},
-		IncQuery:       bson.M{},
+		BaseQuery:      bson.M{"status": 1, "advertiserId": 903},
+		IncQuery:       bson.M{"advertiserId": 903},
 		UserData:       &UserData{},
 		Logger:         logrus.New(),
 		OnIncFinish: func(userData interface{}) interface{} {
-			return "nfew inc base query"
+			ud, ok := userData.(*UserData)
+			if !ok {
+				return nil
+			}
+			incQuery := bson.M{"advertiserId": 903, "$gte": ud.Uptime - 5, "$lte": int(time.Now().Unix())}
+			return incQuery
 		},
 	})
+	if ms == nil {
+		fmt.Println("streamer init err")
+		return
+	}
+	ms.SetContainer(container.CreateBlockingMapContainer(100, 0))
 
 	if err != nil {
 		fmt.Println("Init mongo streamer error! err=" + err.Error())

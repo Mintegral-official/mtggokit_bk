@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"time"
 )
 
@@ -20,6 +21,8 @@ type MongoStreamer struct {
 	client     *mongo.Client
 	collection *mongo.Collection
 	cursor     *mongo.Cursor
+	startTime  int64
+	endTime    int64
 }
 
 func NewMongoStreamer(mongoConfig *MongoStreamerCfg) (*MongoStreamer, error) {
@@ -28,7 +31,11 @@ func NewMongoStreamer(mongoConfig *MongoStreamerCfg) (*MongoStreamer, error) {
 	}
 
 	ctx, _ := context.WithTimeout(context.TODO(), time.Duration(mongoConfig.ConnectTimeout)*time.Microsecond)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoConfig.URI))
+	opt := options.Client().ApplyURI(mongoConfig.URI)
+	opt.SetReadPreference(readpref.SecondaryPreferred())
+	direct := true
+	opt.Direct = &direct
+	client, err := mongo.Connect(ctx, opt)
 	if err != nil {
 		if mongoConfig.Logger != nil {
 			mongoConfig.Logger.Warnf("mongo connect error, err=[%s]", err.Error())
@@ -37,12 +44,12 @@ func NewMongoStreamer(mongoConfig *MongoStreamerCfg) (*MongoStreamer, error) {
 	}
 	streamer.client = client
 
-	//if err = client.Ping(ctx, readpref.Primary()); err != nil {
-	//	if mongoConfig.Logger != nil {
-	//		mongoConfig.Logger.Warnf("mongo ping error, err=[%s]", err.Error())
-	//	}
-	//	return nil, err
-	//}
+	if err = client.Ping(ctx, readpref.Primary()); err != nil {
+		if mongoConfig.Logger != nil {
+			mongoConfig.Logger.Warnf("mongo ping error, err=[%s]", err.Error())
+		}
+		return nil, err
+	}
 
 	streamer.collection = client.Database(mongoConfig.DB).Collection(mongoConfig.Collection)
 	if streamer.collection == nil {
@@ -82,7 +89,7 @@ func (ms *MongoStreamer) Next() (container.DataMode, container.MapKey, interface
 		ms.errorNum++
 		return container.DataModeAdd, nil, nil, errors.New(fmt.Sprintf("cursor is error[%s]", ms.cursor.Err().Error()))
 	}
-	m, k, v, e := ms.curParser.Parse(ms.cursor.Current, nil)
+	m, k, v, e := ms.curParser.Parse(ms.cursor.Current, ms.cfg.UserData)
 	if e != nil {
 		ms.errorNum++
 	}
@@ -91,32 +98,46 @@ func (ms *MongoStreamer) Next() (container.DataMode, container.MapKey, interface
 }
 
 func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
+	ms.startTime = time.Now().Unix()
 	if !ms.hasInit && ms.cfg.IsSync {
-		if err := ms.loadBase(ctx); err != nil {
-			ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+		err := ms.loadBase(ctx)
+		ms.endTime = time.Now().Unix()
+		if err != nil {
+			ms.WarnStatus("LoadBase error:" + err.Error())
 			return err
 		} else {
-			ms.cfg.Logger.Infof("streamer[%s] LoadBase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
-			return err
+			ms.WarnStatus("LoadBase Succ")
+			return nil
 		}
 	}
 	go func() {
+		ms.startTime = time.Now().Unix()
 		if !ms.hasInit {
-			if err := ms.loadBase(ctx); err != nil {
-				ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+			err := ms.loadBase(ctx)
+			ms.endTime = time.Now().Unix()
+			if err != nil {
+				ms.WarnStatus("LoadBase error:" + err.Error())
 			} else {
-				ms.cfg.Logger.Infof("streamer[%s] LoadBase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+				ms.InfoStatus("LoadBase succ")
 			}
 		}
+		ms.cfg.IncQuery = ms.cfg.OnIncFinish(ms.cfg.UserData)
 		for {
 			inc := time.After(time.Duration(ms.cfg.IncInterval) * time.Second)
+			ms.startTime = time.Now().Unix()
 			select {
 			case <-ctx.Done():
-				ms.cfg.Logger.Infof("streamer[%s] LoadInc succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+				ms.endTime = time.Now().Unix()
+				ms.InfoStatus("LoadInc Finish:")
 				return
 			case <-inc:
-				if err := ms.loadInc(ctx); err != nil {
-					ms.cfg.Logger.Warnf("streamer[%s] LoadInc error[%s], totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, err.Error(), ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+				err := ms.loadInc(ctx)
+				ms.endTime = time.Now().Unix()
+				if err != nil {
+					ms.cfg.IncQuery = ms.cfg.OnIncFinish(ms.cfg.UserData)
+					ms.WarnStatus("LoadInc Error:" + err.Error())
+				} else {
+					ms.InfoStatus("LoadInc Succ:")
 				}
 			}
 		}
@@ -128,9 +149,8 @@ func (ms *MongoStreamer) loadBase(ctx context.Context) error {
 	ms.totoalNum = 0
 	ms.errorNum = 0
 	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
-	cur, err := ms.collection.Find(c, ms.cfg.BaseQuery)
+	cur, err := ms.collection.Find(c, ms.cfg.BaseQuery, ms.cfg.FindOpt)
 	if err != nil {
-		ms.cfg.Logger.Warnf("streamer[%s]: loadBase error[%s]", ms.cfg.Name, err.Error())
 		return err
 	}
 
@@ -139,25 +159,26 @@ func (ms *MongoStreamer) loadBase(ctx context.Context) error {
 	}
 	ms.cursor = cur
 	err = ms.container.LoadBase(ms)
-	if err != nil {
-		ms.cfg.Logger.Warnf("Loadbase error, totalNum[%d], errorNum[%d], userData[%s]", ms.totoalNum, ms.errorNum, ms.cfg.UserData)
-		return err
-	}
-	ms.cfg.Logger.Infof("Loadbase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.totoalNum, ms.errorNum, ms.cfg.UserData)
-	return nil
+	return err
 }
 
 func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
 	cur, err := ms.collection.Find(c, ms.cfg.IncQuery)
 	if err != nil {
-		ms.cfg.Logger.Warnf("streamer[%s]: loadInc error[%s]", ms.cfg.Name, err.Error())
 		return err
 	}
-
 	if ms.cursor != nil {
 		_ = ms.cursor.Close(ctx)
 	}
 	ms.cursor = cur
 	return ms.container.LoadInc(ms)
+}
+
+func (ms *MongoStreamer) InfoStatus(s string) {
+	ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, ms.endTime-ms.startTime)
+}
+
+func (ms *MongoStreamer) WarnStatus(s string) {
+	ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, ms.endTime-ms.startTime)
 }

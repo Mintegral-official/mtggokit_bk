@@ -1,6 +1,9 @@
 package streamer
 
-import "github.com/Mintegral-official/mtggokit/bifrost/log"
+import (
+	"github.com/Mintegral-official/mtggokit/bifrost/log"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
 
 type MongoStreamerCfg struct {
 	Name           string
@@ -17,6 +20,7 @@ type MongoStreamerCfg struct {
 	BaseQuery      interface{}
 	IncQuery       interface{}
 	UserData       interface{}
+	FindOpt        *options.FindOptions
 	OnIncFinish    func(interface{}) interface{}
 	Logger         log.BiLogger
 }
