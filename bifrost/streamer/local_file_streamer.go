@@ -15,6 +15,10 @@ type LocalFileStreamer struct {
 	scan      *bufio.Scanner
 	hasInit   bool
 	modTime   time.Time
+	totalNum  int64
+	errorNum  int64
+	startTime int64
+	endTime   int64
 }
 
 func NewFileStreamer(cfg *LocalFileStreamerCfg) *LocalFileStreamer {
@@ -44,26 +48,38 @@ func (fs *LocalFileStreamer) HasNext() bool {
 
 func (fs *LocalFileStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
 	m, k, v, e := fs.cfg.DataParser.Parse([]byte(fs.scan.Text()), nil)
+	fs.totalNum++
+	if e != nil {
+		fs.errorNum++
+	}
 	return m, k, v, e
 }
 
 func (fs *LocalFileStreamer) UpdateData(ctx context.Context) error {
 	if fs.cfg.IsSync {
+		fs.startTime = time.Now().UnixNano()
 		err := fs.updateData(ctx)
+		fs.endTime = time.Now().UnixNano()
 		if err != nil {
+			fs.WarnStatus("LoadBase error: " + err.Error())
 			return err
 		}
+		fs.InfoStatus("LoadBase succ")
 	}
 	go func() {
 		for {
 			inc := time.After(time.Duration(fs.cfg.Interval) * time.Second)
 			select {
 			case <-ctx.Done():
-				fs.cfg.Logger.Infof("streamer[%s] UpdateData Finish", fs.cfg.Name)
 				return
 			case <-inc:
-				if err := fs.updateData(ctx); err != nil {
-					fs.cfg.Logger.Warnf("streamer[%s] LoadInc error[%s]", fs.cfg.Name, err.Error())
+				fs.startTime = time.Now().UnixNano()
+				err := fs.updateData(ctx)
+				fs.endTime = time.Now().UnixNano()
+				if err != nil {
+					fs.WarnStatus("LoadBase error: " + err.Error())
+				} else {
+					fs.InfoStatus("LoadBase succ")
 				}
 			}
 		}
@@ -75,6 +91,8 @@ func (fs *LocalFileStreamer) updateData(ctx context.Context) error {
 
 	switch fs.cfg.UpdatMode {
 	case Static, Dynamic:
+		fs.totalNum = 0
+		fs.errorNum = 0
 		if fs.hasInit && fs.cfg.UpdatMode == Static {
 			return nil
 		}
@@ -97,4 +115,12 @@ func (fs *LocalFileStreamer) updateData(ctx context.Context) error {
 		return errors.New("not support mode[" + fs.cfg.UpdatMode.toString() + "]")
 	}
 	return nil
+}
+
+func (ms *LocalFileStreamer) InfoStatus(s string) {
+	ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+}
+
+func (ms *LocalFileStreamer) WarnStatus(s string) {
+	ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
 }
