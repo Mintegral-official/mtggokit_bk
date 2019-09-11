@@ -46,7 +46,7 @@ func main() {
 	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
 		Name:           "mongo_test",
 		UpdatMode:      streamer.Dynamic,
-		IncInterval:    60,
+		IncInterval:    5,
 		IsSync:         true,
 		URI:            "mongodb://13.250.108.190:27017",
 		DB:             "new_adn",
@@ -59,12 +59,12 @@ func main() {
 		IncQuery:       bson.M{"advertiserId": 903},
 		UserData:       &UserData{},
 		Logger:         logrus.New(),
-		OnIncFinish: func(userData interface{}) interface{} {
+		OnBeforeInc: func(userData interface{}) interface{} {
 			ud, ok := userData.(*UserData)
 			if !ok {
 				return nil
 			}
-			incQuery := bson.M{"advertiserId": 903, "$gte": ud.Uptime - 5, "$lte": int(time.Now().Unix())}
+			incQuery := bson.M{"advertiserId": 903, "updated": bson.M{"$gte": ud.Uptime - 5, "$lte": int(time.Now().Unix())}}
 			return incQuery
 		},
 	})

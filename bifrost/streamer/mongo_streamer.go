@@ -105,10 +105,10 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 		if err != nil {
 			ms.WarnStatus("LoadBase error:" + err.Error())
 			return err
-		} else {
-			ms.WarnStatus("LoadBase Succ")
-			return nil
 		}
+		ms.WarnStatus("LoadBase Succ")
+		ms.hasInit = true
+
 	}
 	go func() {
 		ms.startTime = time.Now().Unix()
@@ -121,7 +121,6 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 				ms.InfoStatus("LoadBase succ")
 			}
 		}
-		ms.cfg.IncQuery = ms.cfg.OnIncFinish(ms.cfg.UserData)
 		for {
 			inc := time.After(time.Duration(ms.cfg.IncInterval) * time.Second)
 			ms.startTime = time.Now().Unix()
@@ -131,10 +130,10 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 				ms.InfoStatus("LoadInc Finish:")
 				return
 			case <-inc:
+				ms.cfg.IncQuery = ms.cfg.OnBeforeInc(ms.cfg.UserData)
 				err := ms.loadInc(ctx)
 				ms.endTime = time.Now().Unix()
 				if err != nil {
-					ms.cfg.IncQuery = ms.cfg.OnIncFinish(ms.cfg.UserData)
 					ms.WarnStatus("LoadInc Error:" + err.Error())
 				} else {
 					ms.InfoStatus("LoadInc Succ:")
@@ -170,7 +169,7 @@ func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 		return err
 	}
 	if ms.cursor != nil {
-		_ = ms.cursor.Close(ctx)
+		_ = ms.cursor.Close(c)
 	}
 	ms.cursor = cur
 	ms.curParser = ms.cfg.IncParser

@@ -21,6 +21,6 @@ type MongoStreamerCfg struct {
 	IncQuery       interface{}
 	UserData       interface{}
 	FindOpt        *options.FindOptions
-	OnIncFinish    func(interface{}) interface{}
+	OnBeforeInc    func(interface{}) interface{}
 	Logger         log.BiLogger
 }

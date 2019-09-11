@@ -21,7 +21,7 @@ func TestNewMongoStreamer(t *testing.T) {
 			BaseQuery:      "mongo base query",
 			IncQuery:       "mongo inc query",
 			UserData:       "user defined data",
-			OnIncFinish: func(userData interface{}) interface{} {
+			OnBeforeInc: func(userData interface{}) interface{} {
 				return "nfew inc base query"
 			},
 		})
