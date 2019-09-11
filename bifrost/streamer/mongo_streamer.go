@@ -21,6 +21,7 @@ type MongoStreamer struct {
 	client     *mongo.Client
 	collection *mongo.Collection
 	cursor     *mongo.Cursor
+	findOpt    *options.FindOptions
 	startTime  int64
 	endTime    int64
 }
@@ -43,6 +44,10 @@ func NewMongoStreamer(mongoConfig *MongoStreamerCfg) (*MongoStreamer, error) {
 		return nil, err
 	}
 	streamer.client = client
+
+	streamer.findOpt = options.MergeFindOptions(mongoConfig.FindOpt)
+	d := time.Duration(mongoConfig.ConnectTimeout) * time.Microsecond
+	streamer.findOpt.MaxTime = &d
 
 	if err = client.Ping(ctx, readpref.Primary()); err != nil {
 		if mongoConfig.Logger != nil {
@@ -98,10 +103,10 @@ func (ms *MongoStreamer) Next() (container.DataMode, container.MapKey, interface
 }
 
 func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
-	ms.startTime = time.Now().Unix()
+	ms.startTime = time.Now().UnixNano()
 	if !ms.hasInit && ms.cfg.IsSync {
 		err := ms.loadBase(ctx)
-		ms.endTime = time.Now().Unix()
+		ms.endTime = time.Now().UnixNano()
 		if err != nil {
 			ms.WarnStatus("LoadBase error:" + err.Error())
 			return err
@@ -111,10 +116,10 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 
 	}
 	go func() {
-		ms.startTime = time.Now().Unix()
+		ms.startTime = time.Now().UnixNano()
 		if !ms.hasInit {
 			err := ms.loadBase(ctx)
-			ms.endTime = time.Now().Unix()
+			ms.endTime = time.Now().UnixNano()
 			if err != nil {
 				ms.WarnStatus("LoadBase error:" + err.Error())
 			} else {
@@ -123,16 +128,17 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 		}
 		for {
 			inc := time.After(time.Duration(ms.cfg.IncInterval) * time.Second)
-			ms.startTime = time.Now().Unix()
 			select {
 			case <-ctx.Done():
-				ms.endTime = time.Now().Unix()
+				ms.startTime = time.Now().UnixNano()
+				ms.endTime = time.Now().UnixNano()
 				ms.InfoStatus("LoadInc Finish:")
 				return
 			case <-inc:
+				ms.startTime = time.Now().UnixNano()
 				ms.cfg.IncQuery = ms.cfg.OnBeforeInc(ms.cfg.UserData)
 				err := ms.loadInc(ctx)
-				ms.endTime = time.Now().Unix()
+				ms.endTime = time.Now().UnixNano()
 				if err != nil {
 					ms.WarnStatus("LoadInc Error:" + err.Error())
 				} else {
@@ -144,17 +150,16 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 	return nil
 }
 
-func (ms *MongoStreamer) loadBase(ctx context.Context) error {
+func (ms *MongoStreamer) loadBase(context.Context) error {
 	ms.totoalNum = 0
 	ms.errorNum = 0
-	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
-	cur, err := ms.collection.Find(c, ms.cfg.BaseQuery, ms.cfg.FindOpt)
+	cur, err := ms.collection.Find(nil, ms.cfg.BaseQuery, ms.findOpt)
 	if err != nil {
 		return err
 	}
 
 	if ms.cursor != nil {
-		_ = ms.cursor.Close(ctx)
+		_ = ms.cursor.Close(nil)
 	}
 	ms.cursor = cur
 	ms.curParser = ms.cfg.BaseParser
@@ -164,7 +169,7 @@ func (ms *MongoStreamer) loadBase(ctx context.Context) error {
 
 func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
-	cur, err := ms.collection.Find(c, ms.cfg.IncQuery)
+	cur, err := ms.collection.Find(nil, ms.cfg.IncQuery, ms.cfg.FindOpt)
 	if err != nil {
 		return err
 	}
@@ -177,9 +182,9 @@ func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 }
 
 func (ms *MongoStreamer) InfoStatus(s string) {
-	ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, ms.endTime-ms.startTime)
+	ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
 }
 
 func (ms *MongoStreamer) WarnStatus(s string) {
-	ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, ms.endTime-ms.startTime)
+	ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
 }
