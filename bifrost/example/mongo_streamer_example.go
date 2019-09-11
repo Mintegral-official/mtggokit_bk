@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"os"
+	"os/signal"
 	"time"
 )
 
@@ -77,9 +78,11 @@ func main() {
 		fmt.Println("Init mongo streamer error! err=" + err.Error())
 		os.Exit(1)
 	}
-	d := 2 * time.Minute
-	ctx, cancel := context.WithTimeout(context.Background(), d)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	c := make(chan os.Signal)
+	signal.Notify(c)
 	_ = ms.UpdateData(ctx)
-	time.Sleep(d + 3*time.Second)
+	s := <-c
+	fmt.Println("退出信号", s)
 }
