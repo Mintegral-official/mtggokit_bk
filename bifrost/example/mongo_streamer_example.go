@@ -51,7 +51,7 @@ func main() {
 		DB:             "new_adn",
 		Collection:     "campaign",
 		ConnectTimeout: 10000,
-		ReadTimeout:    2000,
+		ReadTimeout:    20000,
 		BaseParser:     &CampaignParser{},
 		IncParser:      &CampaignParser{},
 		BaseQuery:      bson.M{"status": 1, "advertiserId": 903},
@@ -77,7 +77,9 @@ func main() {
 		fmt.Println("Init mongo streamer error! err=" + err.Error())
 		os.Exit(1)
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+	d := 2 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), d)
 	defer cancel()
 	_ = ms.UpdateData(ctx)
+	time.Sleep(d + 3*time.Second)
 }
