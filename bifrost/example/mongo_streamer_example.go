@@ -35,7 +35,9 @@ func (cp *CampaignParser) Parse(data []byte, userData interface{}) (container.Da
 	if err := bson.Unmarshal(data, &campaign); err != nil {
 		fmt.Println("bson.Unmarsnal error:" + err.Error())
 	}
-	ud.Uptime = campaign.Uptime
+	if ud.Uptime < campaign.Uptime {
+		ud.Uptime = campaign.Uptime
+	}
 	return container.DataModeAdd, container.I64Key(campaign.CampaignId), &campaign, nil
 }
 

@@ -158,6 +158,7 @@ func (ms *MongoStreamer) loadBase(ctx context.Context) error {
 		_ = ms.cursor.Close(ctx)
 	}
 	ms.cursor = cur
+	ms.curParser = ms.cfg.BaseParser
 	err = ms.container.LoadBase(ms)
 	return err
 }
@@ -172,6 +173,7 @@ func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 		_ = ms.cursor.Close(ctx)
 	}
 	ms.cursor = cur
+	ms.curParser = ms.cfg.IncParser
 	return ms.container.LoadInc(ms)
 }
 
