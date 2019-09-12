@@ -5,8 +5,8 @@
 package elasticsearch
 
 import (
-    "./prometheus"
-    "../metrics"
+    "github.com/Schneizelw/prometheus/client_golang/prometheus"
+    "../../metrics"
     "../internal/lv"
 )
 

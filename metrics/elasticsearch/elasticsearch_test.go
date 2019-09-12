@@ -1,4 +1,4 @@
-package prometheus
+package elasticsearch
 
 import (
     "io/ioutil"

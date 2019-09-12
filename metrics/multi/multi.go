@@ -5,53 +5,70 @@
 package multi
 
 import (
-    "../metrics"
-    "path/filepath"
-    stdprometheus "github.com/prometheus/client_golang/prometheus"
-    stdelasticsearch "../elasticsearch"
+	"fmt"
+	"strings"
+    "../../metrics"
+    "../elasticsearch"
+    "../prometheus"
+	"path/filepath"
     "github.com/spf13/viper"
+    stdprometheus "github.com/prometheus/client_golang/prometheus"
+    stdelasticsearch "github.com/Schneizelw/prometheus/client_golang/prometheus"
 )
 
 // Counter collects multiple individual counters and treats them as a unit.
 type Counter []metrics.Counter
 
-var namespace, subsystem, help, name string
-
 var monitorSystems = map[string]bool{
-    "es", false,
-    "log", false,
-    "prometheus", false
+    "es": false,
+    "log": false,
+    "prometheus": false,
+}
+
+func newEsCounter(v *viper.Viper, lables []string) metrics.Counter {
+    baseOpts := stdelasticsearch.CounterOpts{
+        Namespace: v.GetString("monitorSystem.default.Namespace"),
+        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
+        Name:      v.GetString("monitorSystem.default.Name"),
+        Help:      v.GetString("monitorSystem.default.Help"),
+    }
+    esOpts := stdelasticsearch.CounterEsOpts{
+        Host:  v.GetString("monitorSystem.es.Host"),
+        Port:  v.GetString("monitorSystem.es.Port"),
+        EsIndex: v.GetString("monitorSystem.es.Index"),
+        EsType:  v.GetString("monitorSystem.es.Type"),
+    }
+    return elasticsearch.NewCounterFrom(baseOpts, esOpts, lables)
+}
+
+func newPrometheusCounter(v *viper.Viper, lables []string) metrics.Counter {
+    baseOpts := stdprometheus.CounterOpts{
+        Namespace: v.GetString("monitorSystem.default.Namespace"),
+        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
+        Name:      v.GetString("monitorSystem.default.Name"),
+        Help:      v.GetString("monitorSystem.default.Help"),
+    }
+    return prometheus.NewCounterFrom(baseOpts, lables)
 }
 
 // newCounter returns a multi-counter, wrapping the passed counters.
 func newCounter(v *viper.Viper, lables []string) Counter {
     path := ""
     multiCounter := Counter{}
-    opts := stdprometheus.CounterOpts{
-        Namespace: v.GetString("monitorSystem.default.Namespace"),
-        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
-        Name:      v.GetString("monitorSystem.default.Name"),
-        Help:      v.GetString("monitorSystem.default.Help"),
-    }
     for system, _ := range monitorSystems {
         path = fmt.Sprintf("open.%s.", system)
-        monitorSystem[system] = v.GetBool(path)
-        if !monitorSystem[k] {
+        monitorSystems[system] = v.GetBool(path)
+        if !monitorSystems[system] {
             continue
         }
         switch system {
             case "es":
-                esOpts := stdelasticsearch.CounterEsOpts{
-                    Host:  v.GetString("monitorSystem.es.Host"),
-                    Port:  v.GetString("monitorSystem.es.Port"),
-                    Index: v.GetString("monitorSystem.es.Index"),
-                    Type:  v.GetString("monitorSystem.es.Type"),
-                }
-                esCounter := elasticsearch.NewCounterFrom(opts, esOpts, lables)
+                esCounter := newEsCounter(v, lables)
                 multiCounter = append(multiCounter, esCounter)
                 break
             case "prometheus":
-                multiCounter = append(multiCounter, prometheus.NewCounterFrom(opts, lables))
+                prometheusCounter := newPrometheusCounter(v, lables)
+                multiCounter = append(multiCounter, prometheusCounter)
                 break
         }
     }
@@ -60,17 +77,14 @@ func newCounter(v *viper.Viper, lables []string) Counter {
 
 // NewCounter returns a multi-counter, wrapping the passed counters.
 func NewCounter(fileName string, lables []string) Counter {
-    var counters Counter
-    cfgPath, cfgName := filepath.Split(fileName)
-    end := 0
-    for end = len(cfgName) - 1; end >= 0; end-- {
-        if cfgName[end] == "." {
-            break
-        }
-    }
+    configPath, configName := filepath.Split(fileName)
+	dotIndex := strings.LastIndex(configName, ".")
+	if dotIndex == -1 || configName[dotIndex:] != ".yaml" {
+        panic("config file format must be yaml")
+	}
     v := viper.New()
-    v.AddConfigPath(cfgPath)
-    v.SetConfigName(cfgName[:end])
+    v.AddConfigPath(configPath)
+    v.SetConfigName(configName[:dotIndex])
     v.SetConfigType("yaml")
     if err := v.ReadInConfig(); err != nil {
         panic(err)
