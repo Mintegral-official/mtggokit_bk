@@ -6,8 +6,8 @@ package elasticsearch
 
 import (
     "github.com/Schneizelw/prometheus/client_golang/prometheus"
-    "../../metrics"
-    "../internal/lv"
+    "github.com/Schneizelw/mtggokit/metrics/metrics"
+    "github.com/Schneizelw/mtggokit/metrics/internal/lv"
 )
 
 // Counter implements Counter, via a Prometheus CounterVec.
@@ -52,8 +52,8 @@ type Gauge struct {
 
 // NewGaugeFrom construts and registers a Prometheus GaugeVec,
 // and returns a usable Gauge object.
-func NewGaugeFrom(opts prometheus.GaugeOpts, labelNames []string) *Gauge {
-    gv := prometheus.NewGaugeVec(opts, labelNames)
+func NewGaugeFrom(opts prometheus.GaugeOpts, esOpts prometheus.GaugeEsOpts, labelNames []string) *Gauge {
+    gv := prometheus.NewGaugeVec(opts, esOpts, labelNames)
     prometheus.MustRegister(gv)
     return NewGauge(gv)
 }
@@ -93,8 +93,8 @@ type Summary struct {
 
 // NewSummaryFrom constructs and registers a Prometheus SummaryVec,
 // and returns a usable Summary object.
-func NewSummaryFrom(opts prometheus.SummaryOpts, labelNames []string) *Summary {
-    sv := prometheus.NewSummaryVec(opts, labelNames)
+func NewSummaryFrom(opts prometheus.SummaryOpts, esOpts prometheus.SummaryEsOpts, labelNames []string) *Summary {
+    sv := prometheus.NewSummaryVec(opts, esOpts, labelNames)
     prometheus.MustRegister(sv)
     return NewSummary(sv)
 }
@@ -129,8 +129,8 @@ type Histogram struct {
 
 // NewHistogramFrom constructs and registers a Prometheus HistogramVec,
 // and returns a usable Histogram object.
-func NewHistogramFrom(opts prometheus.HistogramOpts, labelNames []string) *Histogram {
-    hv := prometheus.NewHistogramVec(opts, labelNames)
+func NewHistogramFrom(opts prometheus.HistogramOpts, esOpts prometheus.HistogramEsOpts, labelNames []string) *Histogram {
+    hv := prometheus.NewHistogramVec(opts, esOpts, labelNames)
     prometheus.MustRegister(hv)
     return NewHistogram(hv)
 }

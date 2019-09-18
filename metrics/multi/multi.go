@@ -7,9 +7,9 @@ package multi
 import (
 	"fmt"
 	"strings"
-    "../../metrics"
-    "../elasticsearch"
-    "../prometheus"
+    "github.com/Schneizelw/mtggokit/metrics/metrics"
+    "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
+    "github.com/Schneizelw/mtggokit/metrics/prometheus"
 	"path/filepath"
     "github.com/spf13/viper"
     stdprometheus "github.com/prometheus/client_golang/prometheus"
@@ -19,11 +19,7 @@ import (
 // Counter collects multiple individual counters and treats them as a unit.
 type Counter []metrics.Counter
 
-var monitorSystems = map[string]bool{
-    "es": false,
-    "log": false,
-    "prometheus": false,
-}
+var monitorSystems = []string{"es", "log", "prometheus"}
 
 func newEsCounter(v *viper.Viper, lables []string) metrics.Counter {
     baseOpts := stdelasticsearch.CounterOpts{
@@ -35,8 +31,9 @@ func newEsCounter(v *viper.Viper, lables []string) metrics.Counter {
     esOpts := stdelasticsearch.CounterEsOpts{
         Host:  v.GetString("monitorSystem.es.Host"),
         Port:  v.GetString("monitorSystem.es.Port"),
-        EsIndex: v.GetString("monitorSystem.es.Index"),
-        EsType:  v.GetString("monitorSystem.es.Type"),
+        EsIndex :  v.GetString("monitorSystem.es.Index"),
+        EsType  :  v.GetString("monitorSystem.es.Type"),
+        Interval:  v.GetInt("monitorSystem.es.Interval"),
     }
     return elasticsearch.NewCounterFrom(baseOpts, esOpts, lables)
 }
@@ -54,11 +51,12 @@ func newPrometheusCounter(v *viper.Viper, lables []string) metrics.Counter {
 // newCounter returns a multi-counter, wrapping the passed counters.
 func newCounter(v *viper.Viper, lables []string) Counter {
     path := ""
+	isOpen := false
     multiCounter := Counter{}
-    for system, _ := range monitorSystems {
-        path = fmt.Sprintf("open.%s.", system)
-        monitorSystems[system] = v.GetBool(path)
-        if !monitorSystems[system] {
+    for _, system := range monitorSystems {
+        path = fmt.Sprintf("open.%s", system)
+        isOpen = v.GetBool(path)
+        if !isOpen {
             continue
         }
         switch system {
@@ -75,8 +73,7 @@ func newCounter(v *viper.Viper, lables []string) Counter {
     return multiCounter
 }
 
-// NewCounter returns a multi-counter, wrapping the passed counters.
-func NewCounter(fileName string, lables []string) Counter {
+func setViper(fileName string) *viper.Viper {
     configPath, configName := filepath.Split(fileName)
 	dotIndex := strings.LastIndex(configName, ".")
 	if dotIndex == -1 || configName[dotIndex:] != ".yaml" {
@@ -89,9 +86,14 @@ func NewCounter(fileName string, lables []string) Counter {
     if err := v.ReadInConfig(); err != nil {
         panic(err)
     }
-    return newCounter(v, lables)
+	return v
 }
 
+// NewCounter returns a multi-counter, wrapping the passed counters.
+func NewCounter(fileName string, lables []string) Counter {
+    v := setViper(fileName)
+	return newCounter(v, lables)
+}
 
 // Add implements counter.
 func (c Counter) Add(delta float64) {
@@ -112,9 +114,61 @@ func (c Counter) With(labelValues ...string) metrics.Counter {
 // Gauge collects multiple individual gauges and treats them as a unit.
 type Gauge []metrics.Gauge
 
+func newEsGauge(v *viper.Viper, lables []string) metrics.Gauge {
+    baseOpts := stdelasticsearch.GaugeOpts{
+        Namespace: v.GetString("monitorSystem.default.Namespace"),
+        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
+        Name:      v.GetString("monitorSystem.default.Name"),
+        Help:      v.GetString("monitorSystem.default.Help"),
+    }
+    esOpts := stdelasticsearch.GaugeEsOpts{
+        Host:      v.GetString("monitorSystem.es.Host"),
+        Port:      v.GetString("monitorSystem.es.Port"),
+        EsIndex :  v.GetString("monitorSystem.es.Index"),
+        EsType  :  v.GetString("monitorSystem.es.Type"),
+        Interval:  v.GetInt("monitorSystem.es.Interval"),
+    }
+    return elasticsearch.NewGaugeFrom(baseOpts, esOpts, lables)
+}
+
+func newPrometheusGauge(v *viper.Viper, lables []string) metrics.Gauge {
+    baseOpts := stdprometheus.GaugeOpts{
+        Namespace: v.GetString("monitorSystem.default.Namespace"),
+        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
+        Name:      v.GetString("monitorSystem.default.Name"),
+        Help:      v.GetString("monitorSystem.default.Help"),
+    }
+    return prometheus.NewGaugeFrom(baseOpts, lables)
+}
+
+func newGauge(v *viper.Viper, lables []string) Gauge {
+    path := ""
+	isOpen := false
+    multiGauge := Gauge{}
+    for _, system := range monitorSystems {
+        path = fmt.Sprintf("open.%s", system)
+        isOpen = v.GetBool(path)
+        if !isOpen {
+            continue
+        }
+        switch system {
+            case "es":
+                esGauge := newEsGauge(v, lables)
+                multiGauge = append(multiGauge, esGauge)
+                break
+            case "prometheus":
+                prometheusGauge := newPrometheusGauge(v, lables)
+                multiGauge = append(multiGauge, prometheusGauge)
+                break
+        }
+    }
+    return multiGauge
+}
+
 // NewGauge returns a multi-gauge, wrapping the passed gauges.
-func NewGauge(g ...metrics.Gauge) Gauge {
-    return Gauge(g)
+func NewGauge(fileName string, lables []string) Gauge {
+    v := setViper(fileName)
+    return newGauge(v, lables)
 }
 
 // Set implements Gauge.
