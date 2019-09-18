@@ -182,9 +182,13 @@ func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 }
 
 func (ms *MongoStreamer) InfoStatus(s string) {
-	ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+	if ms.cfg.Logger != nil {
+		ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+	}
 }
 
 func (ms *MongoStreamer) WarnStatus(s string) {
-	ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+	if ms.cfg.Logger != nil {
+		ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+	}
 }

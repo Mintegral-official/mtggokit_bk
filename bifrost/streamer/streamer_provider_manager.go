@@ -8,6 +8,12 @@ type StreamerProviderManager struct {
 	StreamerProviders map[string]*StreamerProvider
 }
 
+func NewStreamerProviderManager() *StreamerProviderManager {
+	return &StreamerProviderManager{
+		StreamerProviders: make(map[string]*StreamerProvider),
+	}
+}
+
 func (spm *StreamerProviderManager) RegiterProvider(name string, provider *StreamerProvider) error {
 	if _, in := spm.StreamerProviders[name]; in {
 		return errors.New("StreamerProvider[" + name + "] is already exist")

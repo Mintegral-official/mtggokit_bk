@@ -1,4 +1,4 @@
-package bifrost
+package bifrost_streamer
 
 import (
 	"context"

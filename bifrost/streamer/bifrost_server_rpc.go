@@ -39,6 +39,10 @@ type BifrostServer struct {
 	StreamerManager *StreamerProviderManager
 }
 
+func NewBifrostServer(streamerManager *StreamerProviderManager) *BifrostServer {
+	return &BifrostServer{StreamerManager: streamerManager}
+}
+
 func (bs *BifrostServer) GetBase(ctx context.Context, req *BaseReq, res *BaseRes) error {
 	sp := bs.StreamerManager.GetProvider(req.Name, req.Progress)
 	if sp == nil {
