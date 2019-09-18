@@ -7,7 +7,7 @@ package multi
 import (
 	"fmt"
 	"strings"
-    "github.com/Schneizelw/mtggokit/metrics/metrics"
+    "github.com/Schneizelw/mtggokit/metrics"
     "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
     "github.com/Schneizelw/mtggokit/metrics/prometheus"
 	"path/filepath"
