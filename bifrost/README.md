@@ -38,13 +38,24 @@ value, err := bifrost.Get("exmaple1", container.Int64(1))
 
 # 架构设计
 
-![flow_arch](pic/flow_arch.png)
+Bifrost分为两种模式
 
-架构如上图，主要分为三个模块，数据源，线上模块，离线模块
+1. 直连模式  bifrost直接从数据源读取数据
+2. 主从模式  bifrost从主节点同步数据
 
-对于简单的数据，线上模块可以直接使用Bifrost功能读取数据源中的数据
+## 直连模式
 
-对于复杂的数据，需要离线模块，由用户自定义数据生成的方式，然后通过Bifrost工具生成数据流，线上的Bifrost直接读取线下Bifrost产生的数据。
+简单的数据源可以使用直连模式，直接将数据加载到目标内存中
+
+![pic/bifrost_arch_1.png](pic/bifrost_arch_1.png)
+
+## 主从模式
+
+复杂的数据源（数据源直接有依赖关系，或者业务逻辑比较复杂），可以使用主从模式。
+
+用户自己生成数据，写到主服务中， 从Bifrost同步主服务中的数据
+
+![pic/bifrost_arch_2.png](pic/bifrost_arch_2.png)
 
 ## Bifrost UML图
 
@@ -210,17 +221,26 @@ ms := NewMongoStreamer(&MongoStreamerCfg{
 
 ## BifrostStreamer
 
-自定义数据流，支持数据的全量增量的生成、和加载，分离线和在线两种工作模式。 
+自定义数据流，支持数据的全量增量的生成、和加载，分BifrostStreamer和StreamerServer两个部分。 
 
-离线模式：由用户产生数据（可同时产生多个streamer），并写入BifrostStreamer, BifrostStreamer会将数据写入container并将按要求产生基准、增量数据。一个离线模块可以看做是一个微服务
+StreamerServer：是一个可以管理多个StreamerProvider的服务，给BifrostStreamer提供基准，增量数据
 
-在线模式：Bifrost会根据streamer的名字，去对应的地址拉取全量或增量数据，同时更新到container中。
+StreamerProvider： 提供全量、增量更新接口，可生成基准、增量数据，一个StreamerProvider对应一个Streamer。
 
-### 离线模式 
+BifrostStreamer：Bifrost会根据streamer的名字，去对应的地址拉取全量或增量数据，同时更新到container中。
+
+
+
+### StreamerServer
+
+StreamerServer有两部分：
+
+1. RPC服务: 同步主从之间的数据，使用rpcx框架；
+2. StreamerProvider: 
 
 #### 基准、增量生成规则：
 
-1. 定期dump基准文件、增量文件的序号，更新时间
+1. 定期dump基准文件，更新时间
 2. 实时写增量文件，内容包含streamerName，更新时间，更新内容
 
 离线模块与线上模块交互：
@@ -228,7 +248,7 @@ ms := NewMongoStreamer(&MongoStreamerCfg{
 1. 基准采用文件方式， 文件格式使用Gob序列化方式
 
    ``````go
-   type FileStruct struct {
+   type BaseInfo struct {
    	Name        string
    	UpdateTime  int64
    	DataVersion int
