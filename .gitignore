@@ -10,5 +10,5 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-.es_counter.go
+.es_usage.go
 .config.yaml
