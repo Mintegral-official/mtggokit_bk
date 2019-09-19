@@ -153,11 +153,11 @@ func (ms *MongoStreamer) loadBase(context.Context) error {
 	ms.totoalNum = 0
 	ms.errorNum = 0
 	if ms.cfg.OnBeforeBase != nil {
-		ms.cfg.IncQuery = ms.cfg.OnBeforeBase(ms.cfg.UserData)
+		ms.cfg.BaseQuery = ms.cfg.OnBeforeBase(ms.cfg.UserData)
 	}
 	cur, err := ms.collection.Find(nil, ms.cfg.BaseQuery, ms.findOpt)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "FindError")
 	}
 
 	if ms.cursor != nil {
@@ -176,7 +176,7 @@ func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
 	cur, err := ms.collection.Find(nil, ms.cfg.IncQuery, ms.cfg.FindOpt)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "FindError")
 	}
 	if ms.cursor != nil {
 		_ = ms.cursor.Close(c)

@@ -129,7 +129,7 @@ func getCampaigIdsStreamer() streamer.Streamer {
 	return lfs
 }
 
-func getCampaignInfoStreamer(bf *bifrost.Bifrost) streamer.Streamer {
+func getCampaignInfoStreamer(bf *bifrost.Bifrost, ud *UserData) streamer.Streamer {
 	// 创建 campaignInfo Streamer
 	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
 		Name:           "campaignsInfo",
@@ -143,10 +143,8 @@ func getCampaignInfoStreamer(bf *bifrost.Bifrost) streamer.Streamer {
 		ReadTimeout:    20000,
 		BaseParser:     &CampaignParser{},
 		IncParser:      &CampaignParser{},
-		UserData: &UserData{
-			Bifrost: bf,
-		},
-		Logger: logrus.New(),
+		UserData:       ud,
+		Logger:         logrus.New(),
 		OnBeforeBase: func(userData interface{}) interface{} {
 			ud, ok := userData.(*UserData)
 			if !ok {
@@ -189,7 +187,7 @@ func getCampaignInfoStreamer(bf *bifrost.Bifrost) streamer.Streamer {
 	return ms
 }
 
-func getCreativeStreamer(bf *bifrost.Bifrost) streamer.Streamer {
+func getCreativeStreamer(bf *bifrost.Bifrost, ud *UserData) streamer.Streamer {
 	// 创建 creative Streamer
 	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
 		Name:           "creativeInfo",
@@ -203,10 +201,8 @@ func getCreativeStreamer(bf *bifrost.Bifrost) streamer.Streamer {
 		ReadTimeout:    20000,
 		BaseParser:     &CreativeParser{},
 		IncParser:      &CreativeParser{},
-		UserData: &UserData{
-			Bifrost: bf,
-		},
-		Logger: logrus.New(),
+		UserData:       ud,
+		Logger:         logrus.New(),
 		OnBeforeBase: func(userData interface{}) interface{} {
 			ud, ok := userData.(*UserData)
 			if !ok {
@@ -257,6 +253,10 @@ func run() {
 	// 初始化 Bifrost
 	bf := bifrost.NewBifrost()
 
+	ud := &UserData{
+		Bifrost: bf,
+	}
+
 	// 创建 campaignsIds streamer
 	idStreamer := getCampaigIdsStreamer()
 	if err := bf.Register("campaignsIds", idStreamer); err != nil {
@@ -264,13 +264,13 @@ func run() {
 	}
 
 	// 创建 campaignInfo Streamer
-	infoStreamer := getCampaignInfoStreamer(bf)
+	infoStreamer := getCampaignInfoStreamer(bf, ud)
 	if err := bf.Register("campaignsInfo", infoStreamer); err != nil {
 		fmt.Println("bf.Register campaignsInfo error ")
 	}
 
 	// 创建 creative Streamer
-	creativeStreamer := getCreativeStreamer(bf)
+	creativeStreamer := getCreativeStreamer(bf, ud)
 	if err := bf.Register("creativeInfo", creativeStreamer); err != nil {
 		fmt.Println("bf.Register creativeInfo error ")
 	}
