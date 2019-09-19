@@ -63,11 +63,9 @@ func newCounter(v *viper.Viper, lables []string) Counter {
             case "es":
                 esCounter := newEsCounter(v, lables)
                 multiCounter = append(multiCounter, esCounter)
-                break
             case "prometheus":
                 prometheusCounter := newPrometheusCounter(v, lables)
                 multiCounter = append(multiCounter, prometheusCounter)
-                break
         }
     }
     return multiCounter
@@ -155,11 +153,9 @@ func newGauge(v *viper.Viper, lables []string) Gauge {
             case "es":
                 esGauge := newEsGauge(v, lables)
                 multiGauge = append(multiGauge, esGauge)
-                break
             case "prometheus":
                 prometheusGauge := newPrometheusGauge(v, lables)
                 multiGauge = append(multiGauge, prometheusGauge)
-                break
         }
     }
     return multiGauge
@@ -194,26 +190,85 @@ func (g Gauge) Add(delta float64) {
     }
 }
 
-// Histogram collects multiple individual histograms and treats them as a unit.
-type Histogram []metrics.Histogram
+// Summary collects multiple individual summaries and treats them as a unit.
+type Summary []metrics.Histogram
 
-// NewHistogram returns a multi-histogram, wrapping the passed histograms.
-func NewHistogram(h ...metrics.Histogram) Histogram {
-    return Histogram(h)
+func newEsSummary(v *viper.Viper, lables []string) metrics.Histogram {
+	objectives := map[float64]float64 {
+		0.5 : v.GetFloat64("monitorSystem.metrics.summary.Quantile50"),
+		0.9 : v.GetFloat64("monitorSystem.metrics.summary.Quantile90"),
+		0.99: v.GetFloat64("monitorSystem.metrics.summary.Quantile99"),
+	}
+    baseOpts := stdelasticsearch.SummaryOpts{
+        Namespace:  v.GetString("monitorSystem.default.Namespace"),
+        Subsystem:  v.GetString("monitorSystem.default.Subsystem"),
+        Name:       v.GetString("monitorSystem.default.Name"),
+        Help:       v.GetString("monitorSystem.default.Help"),
+		Objectives: objectives,
+	}
+    esOpts := stdelasticsearch.SummaryEsOpts{
+        Host:      v.GetString("monitorSystem.es.Host"),
+        Port:      v.GetString("monitorSystem.es.Port"),
+        EsIndex :  v.GetString("monitorSystem.es.Index"),
+        EsType  :  v.GetString("monitorSystem.es.Type"),
+        Interval:  v.GetInt("monitorSystem.es.Interval"),
+    }
+    return elasticsearch.NewSummaryFrom(baseOpts, esOpts, lables)
+}
+
+func newPrometheusSummary(v *viper.Viper, lables []string) metrics.Histogram {
+    baseOpts := stdprometheus.SummaryOpts{
+        Namespace: v.GetString("monitorSystem.default.Namespace"),
+        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
+        Name:      v.GetString("monitorSystem.default.Name"),
+        Help:      v.GetString("monitorSystem.default.Help"),
+    }
+    return prometheus.NewSummaryFrom(baseOpts, lables)
+}
+
+func newSummary(v *viper.Viper, lables []string) Summary {
+    path := ""
+	isOpen := false
+    multiSummary := Summary{}
+    for _, system := range monitorSystems {
+        path = fmt.Sprintf("open.%s", system)
+        isOpen = v.GetBool(path)
+        if !isOpen {
+            continue
+        }
+        switch system {
+            case "es":
+                esSummary := newEsSummary(v, lables)
+                multiSummary = append(multiSummary, esSummary)
+            case "prometheus":
+                prometheusSummary := newPrometheusSummary(v, lables)
+                multiSummary = append(multiSummary, prometheusSummary)
+        }
+    }
+    return multiSummary
+}
+
+// NewSummary returns a multi-summary, wrapping the passed summary.
+func NewSummary(fileName string, lables []string) Summary {
+    v := setViper(fileName)
+    return newSummary(v, lables)
 }
 
 // Observe implements Histogram.
-func (h Histogram) Observe(value float64) {
-    for _, histogram := range h {
-        histogram.Observe(value)
+func (s Summary) Observe(value float64) {
+    for _, summary := range s {
+        summary.Observe(value)
     }
 }
 
 // With implements histogram.
-func (h Histogram) With(labelValues ...string) metrics.Histogram {
-    next := make(Histogram, len(h))
-    for i := range h {
-        next[i] = h[i].With(labelValues...)
+func (s Summary) With(labelValues ...string) metrics.Histogram {
+    next := make(Summary, len(s))
+    for i := range s {
+        next[i] = s[i].With(labelValues...)
     }
     return next
 }
+
+
+
