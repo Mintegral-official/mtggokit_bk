@@ -4,7 +4,7 @@ import "unsafe"
 
 // StringKey is for the string type key
 type StringKey struct {
-	value string
+	Data string
 }
 
 const (
@@ -65,12 +65,12 @@ func hash(str string) uint32 {
 
 // PartitionID is created by string's hash
 func (s *StringKey) PartitionKey() int64 {
-	return int64(hash(s.value))
+	return int64(hash(s.Data))
 }
 
 // Value is the raw string
 func (s *StringKey) Value() interface{} {
-	return s.value
+	return s.Data
 }
 
 // StrKey is to convert a string to StringKey

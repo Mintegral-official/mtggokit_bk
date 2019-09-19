@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/Mintegral-official/mtggokit/bifrost"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
 	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
 	"github.com/sirupsen/logrus"
-	"github.com/smallnest/rpcx/server"
 	"os"
 	"os/signal"
 	"time"
@@ -15,32 +15,43 @@ import (
 func main() {
 
 	sp1 := streamer.NewStreamerProvider(&streamer.StreamerProviderCfg{
-		Name:       "sp1",
+		Name:       "bifrost_streamer_example",
 		ExpireTime: 10,
 		Logger:     logrus.New(),
 	})
-	spm := streamer.NewStreamerProviderManager()
-	if e := spm.RegiterProvider("sp1", sp1); e != nil {
-		fmt.Println("Register error:" + e.Error())
-	}
 
-	biServer := streamer.NewBifrostServer(spm)
-	s := server.NewServer()
-	if e := s.RegisterName("BifrostServer", biServer, ""); e != nil {
-		fmt.Println("RegisterName BifrostServer error")
+	bs := bifrost.NewBifrostServer(&bifrost.BifrostServerCfg{
+		Addr:   "localhost:7878",
+		Logger: logrus.New(),
+	})
+
+	if err := bs.RegisterProvider("bifrost_streamer_example", sp1); err != nil {
+		fmt.Println("Rigister provider error," + err.Error())
 		os.Exit(-1)
 	}
 
+	// 设置基准
+	sp1.SetBase(&streamer.BaseInfo{
+		Name:     "bifrost_streamer_example",
+		Progress: 5,
+		Data: map[container.MapKey]interface{}{
+			container.StrKey("1"): 1,
+			container.StrKey("2"): 4,
+		},
+	})
+
+	//启动服务
 	go func() {
-		if e := s.Serve("tcp", "localhost:7878"); e != nil {
+		if e := bs.Serve(); e != nil {
 			fmt.Println("server closed, err=" + e.Error())
 		}
 	}()
 
 	ctx, cancel := context.WithCancel(context.Background())
+	// 写增量
 	go func() {
 		for {
-			t := time.After(time.Second)
+			t := time.After(10 * time.Second)
 			select {
 			case <-t:
 				keyPrefix := time.Now().Format("2019-01-01_11:12:13")
@@ -69,9 +80,10 @@ func main() {
 		}
 	}()
 
+	// 读增量
 	go func() {
 		for {
-			t := time.After(time.Millisecond * 300)
+			t := time.After(time.Millisecond * 3000)
 			select {
 			case <-t:
 				records, err := sp1.GetInc(time.Now().Add(-time.Second).Unix(), 2)
@@ -90,5 +102,5 @@ func main() {
 	signal.Notify(c)
 	fmt.Println("退出信号", <-c)
 	cancel()
-	_ = s.Close()
+	_ = bs.Close()
 }

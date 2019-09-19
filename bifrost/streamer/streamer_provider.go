@@ -11,7 +11,7 @@ import (
 type BaseInfo struct {
 	Name        string
 	Progress    int64
-	DataVersion int // 更新时间
+	DataVersion int
 	Data        map[container.MapKey]interface{}
 }
 

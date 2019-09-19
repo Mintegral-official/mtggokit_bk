@@ -1,15 +1,15 @@
 package container
 
 type Int64Key struct {
-	value int64
+	Data int64
 }
 
 func (i *Int64Key) PartitionKey() int64 {
-	return i.value
+	return i.Data
 }
 
 func (i *Int64Key) Value() interface{} {
-	return i.value
+	return i.Data
 }
 
 func I64Key(key int64) *Int64Key {

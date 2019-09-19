@@ -1,7 +1,10 @@
 package streamer
 
 import (
+	"bytes"
 	"context"
+	"encoding/gob"
+	"github.com/Mintegral-official/mtggokit/bifrost/container"
 	"github.com/pkg/errors"
 )
 
@@ -11,6 +14,21 @@ const (
 	Ok Status = iota
 	Error
 )
+
+func init() {
+	gob.Register(&container.Int64Key{})
+	gob.Register(&container.StringKey{})
+}
+
+func (s *Status) toString() string {
+	switch *s {
+	case Ok:
+		return "Ok"
+	default:
+		return "unknown"
+
+	}
+}
 
 type BaseReq struct {
 	Name     string
@@ -35,15 +53,15 @@ type IncRes struct {
 	IncRecords []*IncRecord
 }
 
-type BifrostServer struct {
+type BifrostService struct {
 	StreamerManager *StreamerProviderManager
 }
 
-func NewBifrostServer(streamerManager *StreamerProviderManager) *BifrostServer {
-	return &BifrostServer{StreamerManager: streamerManager}
+func NewBifrostServer(streamerManager *StreamerProviderManager) *BifrostService {
+	return &BifrostService{StreamerManager: streamerManager}
 }
 
-func (bs *BifrostServer) GetBase(ctx context.Context, req *BaseReq, res *BaseRes) error {
+func (bs *BifrostService) GetBase(ctx context.Context, req *BaseReq, res *BaseRes) error {
 	sp := bs.StreamerManager.GetProvider(req.Name, req.Progress)
 	if sp == nil {
 		return errors.New("Not found streamer[" + req.Name + "]")
@@ -52,14 +70,12 @@ func (bs *BifrostServer) GetBase(ctx context.Context, req *BaseReq, res *BaseRes
 	if base == nil {
 		return errors.New("Get baseInfo error, streamer[" + req.Name + "]")
 	}
-	res = &BaseRes{
-		Status:   Ok,
-		BaseInfo: base,
-	}
+	res.Status = Ok
+	res.BaseInfo = base
 	return nil
 }
 
-func (bs *BifrostServer) GetIncs(ctx context.Context, req *IncReq, res *IncRes) error {
+func (bs *BifrostService) GetInc(ctx context.Context, req *IncReq, res *IncRes) error {
 	sp := bs.StreamerManager.GetProvider(req.Name, req.Progress)
 	if sp == nil {
 		return errors.New("Not found streamer[" + req.Name + "]")
@@ -73,4 +89,20 @@ func (bs *BifrostServer) GetIncs(ctx context.Context, req *IncReq, res *IncRes) 
 		IncRecords: inc,
 	}
 	return nil
+}
+
+type GobCodec struct {
+}
+
+func (c *GobCodec) Decode(data []byte, i interface{}) error {
+	enc := gob.NewDecoder(bytes.NewBuffer(data))
+	err := enc.Decode(i)
+	return err
+}
+
+func (c *GobCodec) Encode(i interface{}) ([]byte, error) {
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	err := enc.Encode(i)
+	return buf.Bytes(), err
 }

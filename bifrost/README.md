@@ -245,7 +245,7 @@ StreamerServer有两部分：
 
 离线模块与线上模块交互：
 
-1. 基准采用文件方式， 文件格式使用Gob序列化方式
+1. 基准采用文件方式， 文件格式使用Gob序列化方式， 也可以使用
 
    ``````go
    type BaseInfo struct {
@@ -261,15 +261,16 @@ StreamerServer有两部分：
    接口设计
 
    ```go
-   type Request struct {
-     Name string // streamer name
-     Timestamp int // 更新时间
+   type BaseReq struct {
+   	Name     string
+   	Space    string
+   	Progress int64
    }
-   type Record struct {
-     DataType int // 0 新增， 1 更新  2 删除
-     Timestamp int
-     MapKey []MapKey
-     Value interface
+   type IncRecord struct {
+   	DataMode container.DataMode
+   	MapKey   container.MapKey
+   	Progress int64 // 更新时间
+   	Value    interface{}
    }
    type Response struct {
      Records []Record

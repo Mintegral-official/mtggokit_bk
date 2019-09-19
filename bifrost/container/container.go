@@ -1,7 +1,7 @@
 package container
 
 // key of the map, because of go-lang not support generic type，
-// So, here defined an interface for int value or string value key
+// So, here defined an interface for int Data or string Data key
 type MapKey interface {
 	PartitionKey() int64
 	Value() interface{}
