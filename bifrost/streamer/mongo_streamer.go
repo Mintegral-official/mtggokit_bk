@@ -136,7 +136,6 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 				return
 			case <-inc:
 				ms.startTime = time.Now().UnixNano()
-				ms.cfg.IncQuery = ms.cfg.OnBeforeInc(ms.cfg.UserData)
 				err := ms.loadInc(ctx)
 				ms.endTime = time.Now().UnixNano()
 				if err != nil {
@@ -153,6 +152,9 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 func (ms *MongoStreamer) loadBase(context.Context) error {
 	ms.totoalNum = 0
 	ms.errorNum = 0
+	if ms.cfg.OnBeforeBase != nil {
+		ms.cfg.IncQuery = ms.cfg.OnBeforeBase(ms.cfg.UserData)
+	}
 	cur, err := ms.collection.Find(nil, ms.cfg.BaseQuery, ms.findOpt)
 	if err != nil {
 		return err
@@ -168,6 +170,9 @@ func (ms *MongoStreamer) loadBase(context.Context) error {
 }
 
 func (ms *MongoStreamer) loadInc(ctx context.Context) error {
+	if ms.cfg.OnBeforeInc != nil {
+		ms.cfg.IncQuery = ms.cfg.OnBeforeInc(ms.cfg.UserData)
+	}
 	c, _ := context.WithTimeout(ctx, time.Duration(ms.cfg.ReadTimeout)*time.Microsecond)
 	cur, err := ms.collection.Find(nil, ms.cfg.IncQuery, ms.cfg.FindOpt)
 	if err != nil {
