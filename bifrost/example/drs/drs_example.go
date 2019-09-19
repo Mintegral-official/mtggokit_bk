@@ -108,7 +108,7 @@ func (*CreativeParser) Parse(data []byte, userData interface{}) (container.DataM
 func getCampaigIdsStreamer() streamer.Streamer {
 	lfs := streamer.NewFileStreamer(&streamer.LocalFileStreamerCfg{
 		Name:       "campaignsIds",
-		Path:       "data/caimpaigns.txt",
+		Path:       "bifrost/data/caimpaigns.txt",
 		UpdatMode:  streamer.Dynamic,
 		Interval:   5,
 		IsSync:     true,
@@ -132,7 +132,7 @@ func getCampaigIdsStreamer() streamer.Streamer {
 func getCampaignInfoStreamer(bf *bifrost.Bifrost) streamer.Streamer {
 	// 创建 campaignInfo Streamer
 	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
-		Name:           "mongo_test",
+		Name:           "campaignsInfo",
 		UpdatMode:      streamer.Dynamic,
 		IncInterval:    5,
 		IsSync:         true,
@@ -192,7 +192,7 @@ func getCampaignInfoStreamer(bf *bifrost.Bifrost) streamer.Streamer {
 func getCreativeStreamer(bf *bifrost.Bifrost) streamer.Streamer {
 	// 创建 creative Streamer
 	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
-		Name:           "mongo_test",
+		Name:           "creativeInfo",
 		UpdatMode:      streamer.Dynamic,
 		IncInterval:    5,
 		IsSync:         true,
@@ -248,7 +248,7 @@ func getCreativeStreamer(bf *bifrost.Bifrost) streamer.Streamer {
 	}
 	ms.SetContainer(container.CreateBlockingMapContainer(100, 0))
 	if err := ms.UpdateData(context.Background()); err != nil {
-		fmt.Println("CampaignInfoStreamer updateData error: ", err.Error())
+		fmt.Println("Creative Streamer updateData error: ", err.Error())
 	}
 	return ms
 }
