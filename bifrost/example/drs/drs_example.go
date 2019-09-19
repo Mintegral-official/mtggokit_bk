@@ -1,0 +1,292 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"github.com/Mintegral-official/mtggokit/bifrost"
+	"github.com/Mintegral-official/mtggokit/bifrost/container"
+	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
+	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"strconv"
+	"strings"
+	"time"
+)
+
+type UserData struct {
+	Bifrost        *bifrost.Bifrost
+	PackageName    []string
+	CampaignUptime int64
+	CreativeUptime int64
+}
+
+type CampaignIdsParser struct {
+}
+
+func (*CampaignIdsParser) Parse(data []byte, userData interface{}) (container.DataMode, container.MapKey, interface{}, error) {
+	s := string(data)
+	items := strings.SplitN(s, "\t", 3)
+	if len(items) != 3 {
+		return container.DataModeAdd, nil, nil, errors.New("items len is not 2, item[" + s + "]")
+	}
+
+	campaignIdsStr := strings.Split(items[1], ",")
+	campaignIds := make([]int64, 0, len(campaignIdsStr))
+	for _, v := range campaignIdsStr {
+		if id, e := strconv.ParseInt(v, 10, 64); e == nil {
+			campaignIds = append(campaignIds, id)
+		}
+	}
+	return container.DataModeAdd, container.StrKey(items[0]), campaignIds, nil
+}
+
+type CampaignInfo struct {
+	CampaignId   int64  `bson:"campaignId,omitempty"`
+	AdvertiserId *int32 `bson:"advertiserId,omitempty"`
+	PackageName  string `bson:"packageName,omitempty"`
+	Uptime       int64  `bson:"updated,omitempty"`
+}
+
+type CreativeInfo struct {
+	CampaignId int64 `bson:"campaignId,omitempty"`
+	CreativeId int64
+	Uptime     int64 `bson:"updated,omitempty"`
+}
+
+type CampaignParser struct {
+}
+
+func (cp *CampaignParser) Parse(data []byte, userData interface{}) (container.DataMode, container.MapKey, interface{}, error) {
+	ud, ok := userData.(*UserData)
+	if !ok {
+		return container.DataModeAdd, nil, nil, errors.New("user data parse error")
+	}
+	campaign := &CampaignInfo{}
+
+	if err := bson.Unmarshal(data, &campaign); err != nil {
+		fmt.Println("bson.Unmarsnal error:" + err.Error())
+	}
+	if ud.CampaignUptime < campaign.Uptime {
+		ud.CampaignUptime = campaign.Uptime
+	}
+	ud.PackageName = append(ud.PackageName, campaign.PackageName)
+	return container.DataModeAdd, container.I64Key(campaign.CampaignId), &campaign, nil
+}
+
+func GetCampaigns(data *UserData) []int64 {
+	d, err := data.Bifrost.Get("campaignsIds", container.StrKey("CampaignList"))
+	if err != nil {
+		return nil
+	}
+	campaignIds, ok := d.([]int64)
+	if !ok {
+		return nil
+	}
+	return campaignIds
+}
+
+type CreativeParser struct {
+}
+
+func (*CreativeParser) Parse(data []byte, userData interface{}) (container.DataMode, container.MapKey, interface{}, error) {
+	ud, ok := userData.(*UserData)
+	if !ok {
+		return container.DataModeAdd, nil, nil, errors.New("user data parse error")
+	}
+	creative := &CreativeInfo{}
+
+	if err := bson.Unmarshal(data, &creative); err != nil {
+		fmt.Println("bson.Unmarsnal error:" + err.Error())
+	}
+	if ud.CreativeUptime < creative.Uptime {
+		ud.CreativeUptime = creative.Uptime
+	}
+	return container.DataModeAdd, container.I64Key(creative.CampaignId), &creative, nil
+}
+
+func getCampaigIdsStreamer() streamer.Streamer {
+	lfs := streamer.NewFileStreamer(&streamer.LocalFileStreamerCfg{
+		Name:       "campaignsIds",
+		Path:       "data/caimpaigns.txt",
+		UpdatMode:  streamer.Dynamic,
+		Interval:   5,
+		IsSync:     true,
+		DataParser: &CampaignIdsParser{},
+		Logger:     logrus.New(),
+	})
+	if lfs == nil {
+		fmt.Println("Init local file streamer error!")
+		return nil
+	}
+	lfs.SetContainer(&container.BufferedMapContainer{
+		Tolerate: 0.5,
+	})
+
+	if err := lfs.UpdateData(context.Background()); err != nil {
+		fmt.Println("streamer campaignsIds udpateData error: ", err.Error())
+	}
+	return lfs
+}
+
+func getCampaignInfoStreamer(bf *bifrost.Bifrost) streamer.Streamer {
+	// 创建 campaignInfo Streamer
+	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
+		Name:           "mongo_test",
+		UpdatMode:      streamer.Dynamic,
+		IncInterval:    5,
+		IsSync:         true,
+		URI:            "mongodb://13.250.108.190:27017",
+		DB:             "new_adn",
+		Collection:     "campaign",
+		ConnectTimeout: 10000,
+		ReadTimeout:    20000,
+		BaseParser:     &CampaignParser{},
+		IncParser:      &CampaignParser{},
+		UserData: &UserData{
+			Bifrost: bf,
+		},
+		Logger: logrus.New(),
+		OnBeforeBase: func(userData interface{}) interface{} {
+			ud, ok := userData.(*UserData)
+			if !ok {
+				return nil
+			}
+			campaignIds := GetCampaigns(ud)
+			if campaignIds == nil {
+				return nil
+			}
+			baseQuery := bson.M{"campaignId": bson.M{"$in": campaignIds}, "publisherId": 0, "status": 1, "system": 5}
+			return baseQuery
+		},
+		OnBeforeInc: func(userData interface{}) interface{} {
+			ud, ok := userData.(*UserData)
+			if !ok {
+				return nil
+			}
+			campaignIds := GetCampaigns(ud)
+			if campaignIds == nil {
+				return nil
+			}
+			incQuery := bson.M{
+				"campaignId": bson.M{"$in": campaignIds}, "publisherId": 0, "status": 1, "system": 5,
+				"updated": bson.M{"$gte": ud.CampaignUptime - 5, "$lte": int(time.Now().Unix())},
+			}
+			return incQuery
+		},
+	})
+	if err != nil {
+		fmt.Println("streamer init err, error:", err.Error())
+	}
+	if ms == nil {
+		fmt.Println("streamer init err")
+		return nil
+	}
+	ms.SetContainer(container.CreateBlockingMapContainer(100, 0))
+	if err := ms.UpdateData(context.Background()); err != nil {
+		fmt.Println("CampaignInfoStreamer updateData error: ", err.Error())
+	}
+	return ms
+}
+
+func getCreativeStreamer(bf *bifrost.Bifrost) streamer.Streamer {
+	// 创建 creative Streamer
+	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
+		Name:           "mongo_test",
+		UpdatMode:      streamer.Dynamic,
+		IncInterval:    5,
+		IsSync:         true,
+		URI:            "mongodb://13.250.108.190:27017",
+		DB:             "new_adn",
+		Collection:     "creative",
+		ConnectTimeout: 10000,
+		ReadTimeout:    20000,
+		BaseParser:     &CreativeParser{},
+		IncParser:      &CreativeParser{},
+		UserData: &UserData{
+			Bifrost: bf,
+		},
+		Logger: logrus.New(),
+		OnBeforeBase: func(userData interface{}) interface{} {
+			ud, ok := userData.(*UserData)
+			if !ok {
+				return nil
+			}
+			campaignIds := GetCampaigns(ud)
+			if campaignIds == nil {
+				return nil
+			}
+			incQuery := bson.M{"$or": []bson.M{
+				{"campaignId": bson.M{"$in": campaignIds}},
+				{"packageName": bson.M{"$in": ud.PackageName}},
+			}, "status": 1}
+			return incQuery
+		},
+		OnBeforeInc: func(userData interface{}) interface{} {
+			ud, ok := userData.(*UserData)
+			if !ok {
+				return nil
+			}
+			campaignIds := GetCampaigns(ud)
+			if campaignIds == nil {
+				return nil
+			}
+			incQuery := bson.M{"$or": []bson.M{
+				{"campaignId": bson.M{"$in": campaignIds}},
+				{"packageName": bson.M{"$in": ud.PackageName}},
+			}, "updated": bson.M{"$gte": ud.CampaignUptime - 5, "$lte": int(time.Now().Unix())},
+			}
+			return incQuery
+		},
+	})
+	if err != nil {
+		fmt.Println("streamer init err, error:", err.Error())
+	}
+	if ms == nil {
+		fmt.Println("streamer init err")
+		return nil
+	}
+	ms.SetContainer(container.CreateBlockingMapContainer(100, 0))
+	if err := ms.UpdateData(context.Background()); err != nil {
+		fmt.Println("CampaignInfoStreamer updateData error: ", err.Error())
+	}
+	return ms
+}
+
+func run() {
+	// 初始化 Bifrost
+	bf := bifrost.NewBifrost()
+
+	// 创建 campaignsIds streamer
+	idStreamer := getCampaigIdsStreamer()
+	if err := bf.Register("campaignsIds", idStreamer); err != nil {
+		fmt.Println("bf.Register campaignsIds error ")
+	}
+
+	// 创建 campaignInfo Streamer
+	infoStreamer := getCampaignInfoStreamer(bf)
+	if err := bf.Register("campaignsInfo", infoStreamer); err != nil {
+		fmt.Println("bf.Register campaignsInfo error ")
+	}
+
+	// 创建 creative Streamer
+	creativeStreamer := getCreativeStreamer(bf)
+	if err := bf.Register("creativeInfo", creativeStreamer); err != nil {
+		fmt.Println("bf.Register creativeInfo error ")
+	}
+
+	// test
+	data, err := bf.Get("campaignsIds", container.StrKey("CampaignList"))
+	if err != nil {
+		fmt.Println("Get [campaignsIds.CampaignList] error: " + err.Error())
+	}
+	campaignIds, ok := data.([]int64)
+	if !ok {
+		fmt.Println("transfer data to []int64 error")
+	}
+	fmt.Println("len: ", len(campaignIds))
+}
+
+func main() {
+	run()
+}
