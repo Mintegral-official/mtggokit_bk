@@ -46,7 +46,7 @@ func NewMongoStreamer(mongoConfig *MongoStreamerCfg) (*MongoStreamer, error) {
 	streamer.client = client
 
 	streamer.findOpt = options.MergeFindOptions(mongoConfig.FindOpt)
-	d := time.Duration(mongoConfig.ConnectTimeout) * time.Microsecond
+	d := time.Duration(mongoConfig.ReadTimeout) * time.Microsecond
 	streamer.findOpt.MaxTime = &d
 
 	if err = client.Ping(ctx, readpref.Primary()); err != nil {
@@ -111,7 +111,7 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 			ms.WarnStatus("LoadBase error:" + err.Error())
 			return err
 		}
-		ms.WarnStatus("LoadBase Succ")
+		ms.InfoStatus("LoadBase Succ")
 		ms.hasInit = true
 
 	}
