@@ -5,7 +5,7 @@ metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,s
 ## usage
 
 ```golang 
-//path: /project/conf/config
+//path: /project/conf/config.yaml
 open:
     es: true //开关设定
     log: false
@@ -13,16 +13,16 @@ open:
 
 monitorSystem:
     default:
-        Namespace: xxx
-        Subsystemp: xxxx
-        Help: xxxx
-        Name: xxxx
+        Namespace: "counter_test"
+        Subsystemp: "test1"
+        Help: "http request"
+        Name: "request"
     es:
-        Host: xxxx
-        Port: xxxx
-        Index: xxxx
-        Type: xxxx
-        Interval: 10s
+        Host: "xxxx"
+        Port: "xxxx"
+        Index: "metric_test"
+        Type: "test"
+        Interval: 10
 ```
 
 ```
@@ -35,15 +35,17 @@ import (
 func main() {
     var logger *log.Logger
     var multiCount multi.Counter
-    multiCount = multi.NewCounter("/project/conf/config", lablesc[]string)
+	lables := []string{"httpCode", "httpMethod"}
+    multiCount = multi.NewCounter("/project/conf/config.yaml", lables)
     multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(1)
+    multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(2)
+    multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(3)
 }
 ```
 
 ## 总体框架
 
 ![counter](img/总体框架.png)
-
 
 ## 设计图
 
@@ -53,7 +55,5 @@ func main() {
 ![gauge](img/Gauge.png)
 ### Summary
 ![summary](img/Summary.png)
-
-
 
 

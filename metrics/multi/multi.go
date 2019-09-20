@@ -7,11 +7,11 @@ package multi
 import (
 	"fmt"
 	"strings"
+	"path/filepath"
+    "github.com/spf13/viper"
     "github.com/Schneizelw/mtggokit/metrics"
     "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
     "github.com/Schneizelw/mtggokit/metrics/prometheus"
-	"path/filepath"
-    "github.com/spf13/viper"
     stdprometheus "github.com/prometheus/client_golang/prometheus"
     stdelasticsearch "github.com/Schneizelw/prometheus/client_golang/prometheus"
 )
@@ -19,31 +19,31 @@ import (
 // Counter collects multiple individual counters and treats them as a unit.
 type Counter []metrics.Counter
 
-var monitorSystems = []string{"es", "log", "prometheus"}
+var monitorSystems = []string{"Elasticsearch", "Log", "Prometheus"}
 
 func newEsCounter(v *viper.Viper, lables []string) metrics.Counter {
     baseOpts := stdelasticsearch.CounterOpts{
-        Namespace: v.GetString("monitorSystem.default.Namespace"),
-        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
-        Name:      v.GetString("monitorSystem.default.Name"),
-        Help:      v.GetString("monitorSystem.default.Help"),
+        Namespace: v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem: v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:      v.GetString("MonitorSystem.Default.Name"),
+        Help:      v.GetString("MonitorSystem.Default.Help"),
     }
     esOpts := stdelasticsearch.CounterEsOpts{
-        Host:  v.GetString("monitorSystem.es.Host"),
-        Port:  v.GetString("monitorSystem.es.Port"),
-        EsIndex :  v.GetString("monitorSystem.es.Index"),
-        EsType  :  v.GetString("monitorSystem.es.Type"),
-        Interval:  v.GetInt("monitorSystem.es.Interval"),
+        Host:      v.GetString("MonitorSystem.Elasticsearch.Host"),
+        Port:      v.GetString("MonitorSystem.Elasticsearch.Port"),
+        EsIndex :  v.GetString("MonitorSystem.Elasticsearch.Index"),
+        EsType  :  v.GetString("MonitorSystem.Elasticsearch.Type"),
+        Interval:  v.GetInt("MonitorSystem.Elasticsearch.Interval"),
     }
     return elasticsearch.NewCounterFrom(baseOpts, esOpts, lables)
 }
 
 func newPrometheusCounter(v *viper.Viper, lables []string) metrics.Counter {
     baseOpts := stdprometheus.CounterOpts{
-        Namespace: v.GetString("monitorSystem.default.Namespace"),
-        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
-        Name:      v.GetString("monitorSystem.default.Name"),
-        Help:      v.GetString("monitorSystem.default.Help"),
+        Namespace: v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem: v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:      v.GetString("MonitorSystem.Default.Name"),
+        Help:      v.GetString("MonitorSystem.Default.Help"),
     }
     return prometheus.NewCounterFrom(baseOpts, lables)
 }
@@ -54,16 +54,16 @@ func newCounter(v *viper.Viper, lables []string) Counter {
 	isOpen := false
     multiCounter := Counter{}
     for _, system := range monitorSystems {
-        path = fmt.Sprintf("open.%s", system)
+        path = fmt.Sprintf("Open.%s", system)
         isOpen = v.GetBool(path)
         if !isOpen {
             continue
         }
         switch system {
-            case "es":
+            case "Elasticsearch":
                 esCounter := newEsCounter(v, lables)
                 multiCounter = append(multiCounter, esCounter)
-            case "prometheus":
+            case "Prometheus":
                 prometheusCounter := newPrometheusCounter(v, lables)
                 multiCounter = append(multiCounter, prometheusCounter)
         }
@@ -114,27 +114,27 @@ type Gauge []metrics.Gauge
 
 func newEsGauge(v *viper.Viper, lables []string) metrics.Gauge {
     baseOpts := stdelasticsearch.GaugeOpts{
-        Namespace: v.GetString("monitorSystem.default.Namespace"),
-        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
-        Name:      v.GetString("monitorSystem.default.Name"),
-        Help:      v.GetString("monitorSystem.default.Help"),
+        Namespace: v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem: v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:      v.GetString("MonitorSystem.Default.Name"),
+        Help:      v.GetString("MonitorSystem.Default.Help"),
     }
     esOpts := stdelasticsearch.GaugeEsOpts{
-        Host:      v.GetString("monitorSystem.es.Host"),
-        Port:      v.GetString("monitorSystem.es.Port"),
-        EsIndex :  v.GetString("monitorSystem.es.Index"),
-        EsType  :  v.GetString("monitorSystem.es.Type"),
-        Interval:  v.GetInt("monitorSystem.es.Interval"),
+        Host:      v.GetString("MonitorSystem.Elasticsearch.Host"),
+        Port:      v.GetString("MonitorSystem.Elasticsearch.Port"),
+        EsIndex :  v.GetString("MonitorSystem.Elasticsearch.Index"),
+        EsType  :  v.GetString("MonitorSystem.Elasticsearch.Type"),
+        Interval:  v.GetInt("MonitorSystem.Elasticsearch.Interval"),
     }
     return elasticsearch.NewGaugeFrom(baseOpts, esOpts, lables)
 }
 
 func newPrometheusGauge(v *viper.Viper, lables []string) metrics.Gauge {
     baseOpts := stdprometheus.GaugeOpts{
-        Namespace: v.GetString("monitorSystem.default.Namespace"),
-        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
-        Name:      v.GetString("monitorSystem.default.Name"),
-        Help:      v.GetString("monitorSystem.default.Help"),
+        Namespace: v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem: v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:      v.GetString("MonitorSystem.Default.Name"),
+        Help:      v.GetString("MonitorSystem.Default.Help"),
     }
     return prometheus.NewGaugeFrom(baseOpts, lables)
 }
@@ -144,16 +144,16 @@ func newGauge(v *viper.Viper, lables []string) Gauge {
 	isOpen := false
     multiGauge := Gauge{}
     for _, system := range monitorSystems {
-        path = fmt.Sprintf("open.%s", system)
+        path = fmt.Sprintf("Open.%s", system)
         isOpen = v.GetBool(path)
         if !isOpen {
             continue
         }
         switch system {
-            case "es":
+            case "Elasticsearch":
                 esGauge := newEsGauge(v, lables)
                 multiGauge = append(multiGauge, esGauge)
-            case "prometheus":
+            case "Prometheus":
                 prometheusGauge := newPrometheusGauge(v, lables)
                 multiGauge = append(multiGauge, prometheusGauge)
         }
@@ -195,33 +195,33 @@ type Summary []metrics.Histogram
 
 func newEsSummary(v *viper.Viper, lables []string) metrics.Histogram {
 	objectives := map[float64]float64 {
-		0.5 : v.GetFloat64("monitorSystem.metrics.summary.Quantile50"),
-		0.9 : v.GetFloat64("monitorSystem.metrics.summary.Quantile90"),
-		0.99: v.GetFloat64("monitorSystem.metrics.summary.Quantile99"),
+		0.5 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile50"),
+		0.9 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile90"),
+		0.99: v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile99"),
 	}
     baseOpts := stdelasticsearch.SummaryOpts{
-        Namespace:  v.GetString("monitorSystem.default.Namespace"),
-        Subsystem:  v.GetString("monitorSystem.default.Subsystem"),
-        Name:       v.GetString("monitorSystem.default.Name"),
-        Help:       v.GetString("monitorSystem.default.Help"),
+        Namespace:  v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem:  v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:       v.GetString("MonitorSystem.Default.Name"),
+        Help:       v.GetString("MonitorSystem.Default.Help"),
 		Objectives: objectives,
 	}
     esOpts := stdelasticsearch.SummaryEsOpts{
-        Host:      v.GetString("monitorSystem.es.Host"),
-        Port:      v.GetString("monitorSystem.es.Port"),
-        EsIndex :  v.GetString("monitorSystem.es.Index"),
-        EsType  :  v.GetString("monitorSystem.es.Type"),
-        Interval:  v.GetInt("monitorSystem.es.Interval"),
+        Host:      v.GetString("MonitorSystem.Elasticsearch.Host"),
+        Port:      v.GetString("MonitorSystem.Elasticsearch.Port"),
+        EsIndex :  v.GetString("MonitorSystem.Elasticsearch.Index"),
+        EsType  :  v.GetString("MonitorSystem.Elasticsearch.Type"),
+        Interval:  v.GetInt("MonitorSystem.Elasticsearch.Interval"),
     }
     return elasticsearch.NewSummaryFrom(baseOpts, esOpts, lables)
 }
 
 func newPrometheusSummary(v *viper.Viper, lables []string) metrics.Histogram {
     baseOpts := stdprometheus.SummaryOpts{
-        Namespace: v.GetString("monitorSystem.default.Namespace"),
-        Subsystem: v.GetString("monitorSystem.default.Subsystem"),
-        Name:      v.GetString("monitorSystem.default.Name"),
-        Help:      v.GetString("monitorSystem.default.Help"),
+        Namespace: v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem: v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:      v.GetString("MonitorSystem.Default.Name"),
+        Help:      v.GetString("MonitorSystem.Default.Help"),
     }
     return prometheus.NewSummaryFrom(baseOpts, lables)
 }
@@ -231,16 +231,16 @@ func newSummary(v *viper.Viper, lables []string) Summary {
 	isOpen := false
     multiSummary := Summary{}
     for _, system := range monitorSystems {
-        path = fmt.Sprintf("open.%s", system)
+        path = fmt.Sprintf("Open.%s", system)
         isOpen = v.GetBool(path)
         if !isOpen {
             continue
         }
         switch system {
-            case "es":
+            case "Elasticsearch":
                 esSummary := newEsSummary(v, lables)
                 multiSummary = append(multiSummary, esSummary)
-            case "prometheus":
+            case "Prometheus":
                 prometheusSummary := newPrometheusSummary(v, lables)
                 multiSummary = append(multiSummary, prometheusSummary)
         }
@@ -269,6 +269,4 @@ func (s Summary) With(labelValues ...string) metrics.Histogram {
     }
     return next
 }
-
-
 

@@ -5,9 +5,9 @@
 package elasticsearch
 
 import (
-    "github.com/Schneizelw/prometheus/client_golang/prometheus"
     "github.com/Schneizelw/mtggokit/metrics"
     "github.com/Schneizelw/mtggokit/metrics/internal/lv"
+    "github.com/Schneizelw/prometheus/client_golang/prometheus"
 )
 
 // Counter implements Counter, via a Prometheus CounterVec.
