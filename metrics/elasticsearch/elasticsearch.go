@@ -1,31 +1,31 @@
-// Package prometheus provides Prometheus implementations for metrics.
+// Package elasticsearch provides Prometheus implementations for metrics.
 // Individual metrics are mapped to their Prometheus counterparts, and
 // (depending on the constructor used) may be automatically registered in the
 // global Prometheus metrics registry.
 package elasticsearch
 
 import (
-    "github.com/Schneizelw/mtggokit/metrics"
-    "github.com/Schneizelw/mtggokit/metrics/internal/lv"
-    "github.com/Schneizelw/prometheus/client_golang/prometheus"
+    "github.com/mtggokit/metrics"
+    "github.com/mtggokit/metrics/internal/lv"
+    "github.com/elasticsearch/client_golang/elasticsearch"
 )
 
 // Counter implements Counter, via a Prometheus CounterVec.
 type Counter struct {
-    cv  *prometheus.CounterVec
+    cv  *elasticsearch.CounterVec
     lvs lv.LabelValues
 }
 
 // NewCounterFrom constructs and registers a Prometheus CounterVec,
 // and returns a usable Counter object.
-func NewCounterFrom(opts prometheus.CounterOpts, esOpts prometheus.CounterEsOpts, labelNames []string) *Counter {
-    cv := prometheus.NewCounterVec(opts, esOpts, labelNames)
-    prometheus.MustRegister(cv)
+func NewCounterFrom(opts elasticsearch.CounterOpts, esOpts elasticsearch.CounterEsOpts, labelNames []string) *Counter {
+    cv := elasticsearch.NewCounterVec(opts, esOpts, labelNames)
+    elasticsearch.MustRegister(cv)
     return NewCounter(cv)
 }
 
 // NewCounter wraps the CounterVec and returns a usable Counter object.
-func NewCounter(cv *prometheus.CounterVec) *Counter {
+func NewCounter(cv *elasticsearch.CounterVec) *Counter {
     return &Counter{
         cv: cv,
     }
@@ -46,20 +46,20 @@ func (c *Counter) Add(delta float64) {
 
 // Gauge implements Gauge, via a Prometheus GaugeVec.
 type Gauge struct {
-    gv  *prometheus.GaugeVec
+    gv  *elasticsearch.GaugeVec
     lvs lv.LabelValues
 }
 
 // NewGaugeFrom construts and registers a Prometheus GaugeVec,
 // and returns a usable Gauge object.
-func NewGaugeFrom(opts prometheus.GaugeOpts, esOpts prometheus.GaugeEsOpts, labelNames []string) *Gauge {
-    gv := prometheus.NewGaugeVec(opts, esOpts, labelNames)
-    prometheus.MustRegister(gv)
+func NewGaugeFrom(opts elasticsearch.GaugeOpts, esOpts elasticsearch.GaugeEsOpts, labelNames []string) *Gauge {
+    gv := elasticsearch.NewGaugeVec(opts, esOpts, labelNames)
+    elasticsearch.MustRegister(gv)
     return NewGauge(gv)
 }
 
 // NewGauge wraps the GaugeVec and returns a usable Gauge object.
-func NewGauge(gv *prometheus.GaugeVec) *Gauge {
+func NewGauge(gv *elasticsearch.GaugeVec) *Gauge {
     return &Gauge{
         gv: gv,
     }
@@ -87,20 +87,20 @@ func (g *Gauge) Add(delta float64) {
 // between a Summary and a Histogram is that Summaries don't require predefined
 // quantile buckets, but cannot be statistically aggregated.
 type Summary struct {
-    sv  *prometheus.SummaryVec
+    sv  *elasticsearch.SummaryVec
     lvs lv.LabelValues
 }
 
 // NewSummaryFrom constructs and registers a Prometheus SummaryVec,
 // and returns a usable Summary object.
-func NewSummaryFrom(opts prometheus.SummaryOpts, esOpts prometheus.SummaryEsOpts, labelNames []string) *Summary {
-    sv := prometheus.NewSummaryVec(opts, esOpts, labelNames)
-    prometheus.MustRegister(sv)
+func NewSummaryFrom(opts elasticsearch.SummaryOpts, esOpts elasticsearch.SummaryEsOpts, labelNames []string) *Summary {
+    sv := elasticsearch.NewSummaryVec(opts, esOpts, labelNames)
+    elasticsearch.MustRegister(sv)
     return NewSummary(sv)
 }
 
 // NewSummary wraps the SummaryVec and returns a usable Summary object.
-func NewSummary(sv *prometheus.SummaryVec) *Summary {
+func NewSummary(sv *elasticsearch.SummaryVec) *Summary {
     return &Summary{
         sv: sv,
     }
@@ -123,20 +123,20 @@ func (s *Summary) Observe(value float64) {
 // between a Histogram and a Summary is that Histograms require predefined
 // quantile buckets, and can be statistically aggregated.
 type Histogram struct {
-    hv  *prometheus.HistogramVec
+    hv  *elasticsearch.HistogramVec
     lvs lv.LabelValues
 }
 
 // NewHistogramFrom constructs and registers a Prometheus HistogramVec,
 // and returns a usable Histogram object.
-func NewHistogramFrom(opts prometheus.HistogramOpts, esOpts prometheus.HistogramEsOpts, labelNames []string) *Histogram {
-    hv := prometheus.NewHistogramVec(opts, esOpts, labelNames)
-    prometheus.MustRegister(hv)
+func NewHistogramFrom(opts elasticsearch.HistogramOpts, esOpts elasticsearch.HistogramEsOpts, labelNames []string) *Histogram {
+    hv := elasticsearch.NewHistogramVec(opts, esOpts, labelNames)
+    elasticsearch.MustRegister(hv)
     return NewHistogram(hv)
 }
 
 // NewHistogram wraps the HistogramVec and returns a usable Histogram object.
-func NewHistogram(hv *prometheus.HistogramVec) *Histogram {
+func NewHistogram(hv *elasticsearch.HistogramVec) *Histogram {
     return &Histogram{
         hv: hv,
     }
@@ -155,8 +155,8 @@ func (h *Histogram) Observe(value float64) {
     h.hv.With(makeLabels(h.lvs...)).Observe(value)
 }
 
-func makeLabels(labelValues ...string) prometheus.Labels {
-    labels := prometheus.Labels{}
+func makeLabels(labelValues ...string) elasticsearch.Labels {
+    labels := elasticsearch.Labels{}
     for i := 0; i < len(labelValues); i += 2 {
         labels[labelValues[i]] = labelValues[i+1]
     }

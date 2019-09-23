@@ -9,11 +9,11 @@ import (
 	"strings"
 	"path/filepath"
     "github.com/spf13/viper"
-    "github.com/Schneizelw/mtggokit/metrics"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
-    "github.com/Schneizelw/mtggokit/metrics/prometheus"
+    "github.com/mtggokit/metrics"
+    "github.com/mtggokit/metrics/elasticsearch"
+    "github.com/mtggokit/metrics/prometheus"
     stdprometheus "github.com/prometheus/client_golang/prometheus"
-    stdelasticsearch "github.com/Schneizelw/prometheus/client_golang/prometheus"
+    stdelasticsearch "github.com/elasticsearch/client_golang/elasticsearch"
 )
 
 // Counter collects multiple individual counters and treats them as a unit.
