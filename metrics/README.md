@@ -4,6 +4,17 @@ metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,s
 
 ## usage
 
+install:
+```
+cd $GOPATH/src/github.com
+go get -v -u github.com/prometheus/client_golang/prometheus
+go clone https://github.com/Schneizelw/elasticsearch.git 
+go clone https://github.com/Schneizelw/mtggokit.git
+
+
+```
+
+
 ```golang 
 #path: /project/conf/config.yaml
 open:
