@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/Mintegral-official/mtggokit/bifrost"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
@@ -24,11 +23,11 @@ type UserData struct {
 type CampaignIdsParser struct {
 }
 
-func (*CampaignIdsParser) Parse(data []byte, userData interface{}) (container.DataMode, container.MapKey, interface{}, error) {
+func (*CampaignIdsParser) Parse(data []byte, userData interface{}) []streamer.ParserResult {
 	s := string(data)
 	items := strings.SplitN(s, "\t", 3)
 	if len(items) != 3 {
-		return container.DataModeAdd, nil, nil, errors.New("items len is not 2, item[" + s + "]")
+		return nil
 	}
 
 	campaignIdsStr := strings.Split(items[1], ",")
@@ -38,7 +37,7 @@ func (*CampaignIdsParser) Parse(data []byte, userData interface{}) (container.Da
 			campaignIds = append(campaignIds, id)
 		}
 	}
-	return container.DataModeAdd, container.StrKey(items[0]), campaignIds, nil
+	return []streamer.ParserResult{{container.DataModeAdd, container.StrKey(items[0]), campaignIds, nil}}
 }
 
 type CampaignInfo struct {
@@ -57,10 +56,10 @@ type CreativeInfo struct {
 type CampaignParser struct {
 }
 
-func (cp *CampaignParser) Parse(data []byte, userData interface{}) (container.DataMode, container.MapKey, interface{}, error) {
+func (cp *CampaignParser) Parse(data []byte, userData interface{}) []streamer.ParserResult {
 	ud, ok := userData.(*UserData)
 	if !ok {
-		return container.DataModeAdd, nil, nil, errors.New("user data parse error")
+		return nil
 	}
 	campaign := &CampaignInfo{}
 
@@ -71,7 +70,7 @@ func (cp *CampaignParser) Parse(data []byte, userData interface{}) (container.Da
 		ud.CampaignUptime = campaign.Uptime
 	}
 	ud.PackageName = append(ud.PackageName, campaign.PackageName)
-	return container.DataModeAdd, container.I64Key(campaign.CampaignId), &campaign, nil
+	return []streamer.ParserResult{{container.DataModeAdd, container.I64Key(campaign.CampaignId), &campaign, nil}}
 }
 
 func GetCampaigns(data *UserData) []int64 {
@@ -89,10 +88,10 @@ func GetCampaigns(data *UserData) []int64 {
 type CreativeParser struct {
 }
 
-func (*CreativeParser) Parse(data []byte, userData interface{}) (container.DataMode, container.MapKey, interface{}, error) {
+func (*CreativeParser) Parse(data []byte, userData interface{}) []streamer.ParserResult {
 	ud, ok := userData.(*UserData)
 	if !ok {
-		return container.DataModeAdd, nil, nil, errors.New("user data parse error")
+		return nil
 	}
 	creative := &CreativeInfo{}
 
@@ -102,7 +101,7 @@ func (*CreativeParser) Parse(data []byte, userData interface{}) (container.DataM
 	if ud.CreativeUptime < creative.Uptime {
 		ud.CreativeUptime = creative.Uptime
 	}
-	return container.DataModeAdd, container.I64Key(creative.CampaignId), &creative, nil
+	return []streamer.ParserResult{{container.DataModeAdd, container.I64Key(creative.CampaignId), &creative, nil}}
 }
 
 func getCampaigIdsStreamer() streamer.Streamer {
@@ -284,6 +283,7 @@ func run() {
 	if !ok {
 		fmt.Println("transfer data to []int64 error")
 	}
+
 	fmt.Println("len: ", len(campaignIds))
 }
 

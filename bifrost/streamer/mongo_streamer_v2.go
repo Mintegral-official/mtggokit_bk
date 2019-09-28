@@ -16,7 +16,7 @@ package streamer
 //	container     container.Container
 //	cfg           *MongoStreamerCfg
 //	hasInit       bool
-//	totoalNum     int64
+//	totalNum     int64
 //	errorNum      int64
 //	curParser     DataParser
 //	mgoSession    *mgo.Session
@@ -88,37 +88,37 @@ package streamer
 //	if e != nil {
 //		ms.errorNum++
 //	}
-//	ms.totoalNum++
+//	ms.totalNum++
 //	return m, k, v, e
 //}
 //
 //func (ms *MongoStreamerV2) UpdateData(ctx context.Context) error {
 //	if ms.hasInit && ms.cfg.IsSync {
 //		if err := ms.loadBase(ctx); err != nil {
-//			ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//			ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //			return err
 //		} else {
-//			ms.cfg.Logger.Infof("streamer[%s] LoadBase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//			ms.cfg.Logger.Infof("streamer[%s] LoadBase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //			return err
 //		}
 //	}
 //	go func() {
 //		if ms.hasInit {
 //			if err := ms.loadBase(ctx); err != nil {
-//				ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//				ms.cfg.Logger.Warnf("streamer[%s] LoadBase error, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //			} else {
-//				ms.cfg.Logger.Infof("streamer[%s] LoadBase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//				ms.cfg.Logger.Infof("streamer[%s] LoadBase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //			}
 //		}
 //		for {
 //			inc := time.After(time.Duration(ms.cfg.IncInterval) * time.Second)
 //			select {
 //			case <-ctx.Done():
-//				ms.cfg.Logger.Infof("streamer[%s] LoadInc succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//				ms.cfg.Logger.Infof("streamer[%s] LoadInc succ, totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //				return
 //			case <-inc:
 //				if err := ms.loadInc(ctx); err != nil {
-//					ms.cfg.Logger.Warnf("streamer[%s] LoadInc error[%s], totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, err.Error(), ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//					ms.cfg.Logger.Warnf("streamer[%s] LoadInc error[%s], totalNum[%d], errorNum[%d], userData[%s]", ms.cfg.Name, err.Error(), ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //				}
 //			}
 //		}
@@ -127,7 +127,7 @@ package streamer
 //}
 //
 //func (ms *MongoStreamerV2) loadBase(ctx context.Context) error {
-//	ms.totoalNum = 0
+//	ms.totalNum = 0
 //	ms.errorNum = 0
 //	query := ms.mgoCollection.Find(ms.cfg.BaseQuery)
 //	if query == nil {
@@ -138,10 +138,10 @@ package streamer
 //	ms.query = query
 //	err := ms.container.LoadBase(ms)
 //	if err != nil {
-//		ms.cfg.Logger.Warnf("Loadbase error, totalNum[%d], errorNum[%d], userData[%s]", ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//		ms.cfg.Logger.Warnf("Loadbase error, totalNum[%d], errorNum[%d], userData[%s]", ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //		return err
 //	}
-//	ms.cfg.Logger.Infof("Loadbase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.totoalNum, ms.errorNum, ms.cfg.UserData)
+//	ms.cfg.Logger.Infof("Loadbase succ, totalNum[%d], errorNum[%d], userData[%s]", ms.totalNum, ms.errorNum, ms.cfg.UserData)
 //	return nil
 //}
 //

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
 	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"os"
@@ -26,10 +25,10 @@ type CampaignInfo struct {
 type CampaignParser struct {
 }
 
-func (cp *CampaignParser) Parse(data []byte, userData interface{}) (container.DataMode, container.MapKey, interface{}, error) {
+func (cp *CampaignParser) Parse(data []byte, userData interface{}) []streamer.ParserResult {
 	ud, ok := userData.(*UserData)
 	if !ok {
-		return container.DataModeAdd, nil, nil, errors.New("user data parse error")
+		return nil
 	}
 	campaign := &CampaignInfo{}
 
@@ -39,7 +38,7 @@ func (cp *CampaignParser) Parse(data []byte, userData interface{}) (container.Da
 	if ud.Uptime < campaign.Uptime {
 		ud.Uptime = campaign.Uptime
 	}
-	return container.DataModeAdd, container.I64Key(campaign.CampaignId), &campaign, nil
+	return []streamer.ParserResult{{container.DataModeAdd, container.I64Key(campaign.CampaignId), &campaign, nil}}
 }
 
 func main() {

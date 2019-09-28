@@ -3,6 +3,7 @@ package streamer
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
 	"github.com/pkg/errors"
 	"os"
@@ -13,6 +14,8 @@ type LocalFileStreamer struct {
 	container container.Container
 	cfg       *LocalFileStreamerCfg
 	scan      *bufio.Scanner
+	result    []ParserResult
+	curLen    int
 	hasInit   bool
 	modTime   time.Time
 	totalNum  int64
@@ -43,16 +46,33 @@ func (fs *LocalFileStreamer) GetSchedInfo() *SchedInfo {
 }
 
 func (fs *LocalFileStreamer) HasNext() bool {
-	return fs.scan != nil && fs.scan.Scan()
+	return fs.curLen < len(fs.result) || fs.scan != nil && fs.scan.Scan()
 }
 
 func (fs *LocalFileStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
-	m, k, v, e := fs.cfg.DataParser.Parse([]byte(fs.scan.Text()), nil)
 	fs.totalNum++
-	if e != nil {
+	if fs.curLen < len(fs.result) {
+		r := fs.result[fs.curLen]
+		fs.curLen++
+		if r.Err != nil {
+			fs.errorNum++
+		}
+		return r.DataMode, r.Key, r.Value, r.Err
+	}
+	result := fs.cfg.DataParser.Parse([]byte(fs.scan.Text()), nil)
+	if result == nil {
 		fs.errorNum++
 	}
-	return m, k, v, e
+	fs.curLen = 0
+	if fs.curLen < len(fs.result) {
+		r := fs.result[fs.curLen]
+		fs.curLen++
+		if r.Err != nil {
+			fs.errorNum++
+		}
+		return r.DataMode, r.Key, r.Value, r.Err
+	}
+	return container.DataModeAdd, nil, nil, errors.New(fmt.Sprintf("Index[%d] error, len[%d]", fs.curLen, len(fs.result)))
 }
 
 func (fs *LocalFileStreamer) UpdateData(ctx context.Context) error {

@@ -15,12 +15,14 @@ type MongoStreamer struct {
 	container  container.Container
 	cfg        *MongoStreamerCfg
 	hasInit    bool
-	totoalNum  int64
+	totalNum   int64
 	errorNum   int64
 	curParser  DataParser
 	client     *mongo.Client
 	collection *mongo.Collection
 	cursor     *mongo.Cursor
+	result     []ParserResult
+	curLen     int
 	findOpt    *options.FindOptions
 	startTime  int64
 	endTime    int64
@@ -82,24 +84,45 @@ func (ms *MongoStreamer) GetSchedInfo() *SchedInfo {
 }
 
 func (ms *MongoStreamer) HasNext() bool {
-	return ms.cursor.Next(context.Background())
+	return ms.curLen < len(ms.result) || ms.cursor.Next(context.Background())
 }
 
 func (ms *MongoStreamer) Next() (container.DataMode, container.MapKey, interface{}, error) {
+
+	ms.totalNum++
+	if ms.curLen < len(ms.result) {
+		r := ms.result[ms.curLen]
+		ms.curLen++
+		if r.Err != nil {
+			ms.errorNum++
+		}
+		return r.DataMode, r.Key, r.Value, r.Err
+	}
+
 	if ms.cursor == nil {
 		ms.errorNum++
 		return container.DataModeAdd, nil, nil, errors.New("cursor is nil")
 	}
 	if ms.cursor.Err() != nil {
+		ms.WarnStatus(fmt.Sprintf("cursor is error[%s]", ms.cursor.Err().Error()))
 		ms.errorNum++
 		return container.DataModeAdd, nil, nil, errors.New(fmt.Sprintf("cursor is error[%s]", ms.cursor.Err().Error()))
 	}
-	m, k, v, e := ms.curParser.Parse(ms.cursor.Current, ms.cfg.UserData)
-	if e != nil {
+	result := ms.curParser.Parse(ms.cursor.Current, ms.cfg.UserData)
+	if result == nil {
 		ms.errorNum++
 	}
-	ms.totoalNum++
-	return m, k, v, e
+
+	ms.curLen = 0
+	if ms.curLen < len(ms.result) {
+		r := ms.result[ms.curLen]
+		ms.curLen++
+		if r.Err != nil {
+			ms.errorNum++
+		}
+		return r.DataMode, r.Key, r.Value, r.Err
+	}
+	return container.DataModeAdd, nil, nil, errors.New(fmt.Sprintf("Index[%d] error, len[%d]", ms.curLen, len(ms.result)))
 }
 
 func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
@@ -150,7 +173,7 @@ func (ms *MongoStreamer) UpdateData(ctx context.Context) error {
 }
 
 func (ms *MongoStreamer) loadBase(context.Context) error {
-	ms.totoalNum = 0
+	ms.totalNum = 0
 	ms.errorNum = 0
 	if ms.cfg.OnBeforeBase != nil {
 		ms.cfg.BaseQuery = ms.cfg.OnBeforeBase(ms.cfg.UserData)
@@ -188,12 +211,12 @@ func (ms *MongoStreamer) loadInc(ctx context.Context) error {
 
 func (ms *MongoStreamer) InfoStatus(s string) {
 	if ms.cfg.Logger != nil {
-		ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+		ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
 	}
 }
 
 func (ms *MongoStreamer) WarnStatus(s string) {
 	if ms.cfg.Logger != nil {
-		ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totoalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+		ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
 	}
 }
