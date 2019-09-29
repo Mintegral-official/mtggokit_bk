@@ -11,11 +11,13 @@ import (
     "github.com/spf13/viper"
 
     "github.com/Schneizelw/mtggokit/metrics"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
     "github.com/Schneizelw/mtggokit/metrics/prometheus"
+    "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
+    "github.com/Schneizelw/mtggokit/metrics/metricslog"
 
     stdprometheus "github.com/prometheus/client_golang/prometheus"
     stdelasticsearch "github.com/Schneizelw/elasticsearch/client_golang/elasticsearch"
+    stdmetricslog "github.com/Schneizelw/metricslog/client_golang/metricslog"
 )
 
 // Counter collects multiple individual counters and treats them as a unit.
@@ -50,6 +52,19 @@ func newPrometheusCounter(v *viper.Viper, lables []string) metrics.Counter {
     return prometheus.NewCounterFrom(baseOpts, lables)
 }
 
+func newLogCounter(v *viper.Viper, lables []string) metrics.Counter {
+    baseOpts := stdmetricslog.CounterOpts{
+        Namespace: v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem: v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:      v.GetString("MonitorSystem.Default.Name"),
+        Help:      v.GetString("MonitorSystem.Default.Help"),
+    }
+    logOpts := stdmetricslog.CounterLogOpts{
+        Interval:  v.GetInt("MonitorSystem.Log.Interval"),
+    }
+    return metricslog.NewCounterFrom(baseOpts, logOpts, lables)
+}
+
 // newCounter returns a multi-counter, wrapping the passed counters.
 func newCounter(v *viper.Viper, lables []string) Counter {
     path := ""
@@ -68,6 +83,9 @@ func newCounter(v *viper.Viper, lables []string) Counter {
             case "Prometheus":
                 prometheusCounter := newPrometheusCounter(v, lables)
                 multiCounter = append(multiCounter, prometheusCounter)
+            case "Log":
+                logCounter := newLogCounter(v, lables)
+                multiCounter = append(multiCounter, logCounter)
         }
     }
     return multiCounter
@@ -141,6 +159,19 @@ func newPrometheusGauge(v *viper.Viper, lables []string) metrics.Gauge {
     return prometheus.NewGaugeFrom(baseOpts, lables)
 }
 
+func newLogGauge(v *viper.Viper, lables []string) metrics.Gauge {
+    baseOpts := stdmetricslog.GaugeOpts{
+        Namespace: v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem: v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:      v.GetString("MonitorSystem.Default.Name"),
+        Help:      v.GetString("MonitorSystem.Default.Help"),
+    }
+    logOpts := stdmetricslog.GaugeLogOpts{
+        Interval:  v.GetInt("MonitorSystem.Log.Interval"),
+    }
+    return metricslog.NewGaugeFrom(baseOpts, logOpts, lables)
+}
+
 func newGauge(v *viper.Viper, lables []string) Gauge {
     path := ""
 	isOpen := false
@@ -158,6 +189,9 @@ func newGauge(v *viper.Viper, lables []string) Gauge {
             case "Prometheus":
                 prometheusGauge := newPrometheusGauge(v, lables)
                 multiGauge = append(multiGauge, prometheusGauge)
+            case "Log":
+                logGauge := newLogGauge(v, lables)
+                multiGauge = append(multiGauge, logGauge)
         }
     }
     return multiGauge
@@ -228,6 +262,25 @@ func newPrometheusSummary(v *viper.Viper, lables []string) metrics.Histogram {
     return prometheus.NewSummaryFrom(baseOpts, lables)
 }
 
+func newLogSummary(v *viper.Viper, lables []string) metrics.Histogram {
+	objectives := map[float64]float64 {
+		0.5 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile50"),
+		0.9 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile90"),
+		0.99: v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile99"),
+	}
+    baseOpts := stdmetricslog.SummaryOpts{
+        Namespace:  v.GetString("MonitorSystem.Default.Namespace"),
+        Subsystem:  v.GetString("MonitorSystem.Default.Subsystem"),
+        Name:       v.GetString("MonitorSystem.Default.Name"),
+        Help:       v.GetString("MonitorSystem.Default.Help"),
+		Objectives: objectives,
+	}
+    logOpts := stdmetricslog.SummaryLogOpts{
+        Interval:  v.GetInt("MonitorSystem.Log.Interval"),
+    }
+    return metricslog.NewSummaryFrom(baseOpts, logOpts, lables)
+}
+
 func newSummary(v *viper.Viper, lables []string) Summary {
     path := ""
 	isOpen := false
@@ -245,6 +298,9 @@ func newSummary(v *viper.Viper, lables []string) Summary {
             case "Prometheus":
                 prometheusSummary := newPrometheusSummary(v, lables)
                 multiSummary = append(multiSummary, prometheusSummary)
+            case "Log":
+                logSummary := newLogSummary(v, lables)
+                multiSummary = append(multiSummary, logSummary)
         }
     }
     return multiSummary
