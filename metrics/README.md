@@ -6,48 +6,43 @@ metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,s
 
 install:
 ```
-cd $GOPATH/src/github.com
-go get -v -u github.com/prometheus/client_golang/prometheus
-go clone https://github.com/Schneizelw/elasticsearch.git 
-go clone https://github.com/Schneizelw/mtggokit.git
+go get -v -u github.com/Mintegral-official/mtggokit/metrics/multi
 ```
 
 
 ```golang 
 #path: /project/conf/config.yaml
-open:
-    es: true //开关设定
-    log: false
-    prometheus: true
-
-monitorSystem:
-    default:
-        Namespace: "counter_test"
-        Subsystemp: "test1"
-        Help: "http request"
-        Name: "request"
-    es:
-        Host: "xxxx"
-        Port: "xxxx"
-        Index: "metric_test"
-        Type: "test"
-        Interval: 10
-# 配置summary的误差值, Quantile50表示二分位.
+Open:
+    Log: true
+    Prometheus: false
+    Elasticsearch: false
+MonitorSystem:
+    Default:
+        Namespace: "Test"
+        Subsystem: "testCount"
+        Help: "just a test"
+        Name: "test"
+    Elasticsearch:
+        Host: "xxxxx.com"
+        Port: "8000"
+        Index: "metric"
+        Type: "metric_test"
+        Interval: "10" #时间间隔
+    Log:
+        Interval: "10"
 Metrics:
     Summary:
-        Quantile50: 5
-        Quantile90: 2
-        Quantile99: 1
+        Quantile50: 5 #配合对应分位数的误差
+        Quantile90: 2 
+        Quantile99: 1 
 
 ```
 
-```
-
+usage:
 ```golang 
-//use
 import (
-	"time"
-	"github.com/mtggokit/metrics/multi"
+    "time"
+    "github.com/mtggokit/metrics/multi"
 )
 func main() {
     var logger *log.Logger
@@ -57,21 +52,7 @@ func main() {
     multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(1)
     multiCount.with({"httpCode":"200","httpMethod":"GET"}).Add(2)
     multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(3)
-	time.Sleep(1000*time.Second)
+    time.Sleep(1000*time.Second)
 }
 ```
-
-## 总体框架
-
-![counter](img/总体框架.png)
-
-## 设计图
-
-### Counter
-![counter](img/Counter.png)
-### Gauge
-![gauge](img/Gauge.png)
-### Summary
-![summary](img/Summary.png)
-
 

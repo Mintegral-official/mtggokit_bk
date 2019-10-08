@@ -10,10 +10,10 @@ import (
 	"path/filepath"
     "github.com/spf13/viper"
 
-    "github.com/Schneizelw/mtggokit/metrics"
-    "github.com/Schneizelw/mtggokit/metrics/prometheus"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
-    "github.com/Schneizelw/mtggokit/metrics/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics"
+    "github.com/Mintegral-official/mtggokit/metrics/prometheus"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog"
 
     stdprometheus "github.com/prometheus/client_golang/prometheus"
     stdelasticsearch "github.com/Schneizelw/elasticsearch/client_golang/elasticsearch"
