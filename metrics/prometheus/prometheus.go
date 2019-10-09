@@ -7,7 +7,7 @@ package prometheus
 import (
     "github.com/prometheus/client_golang/prometheus"
 
-    "github.com/Schneizelw/mtggokit/metrics"
+    "github.com/Schneizelw/mtggokit/metrics/metrics"
     "github.com/Schneizelw/mtggokit/metrics/internal/lv"
 )
 

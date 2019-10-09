@@ -2,7 +2,7 @@
 // simultaneously. This is useful if your service needs to emit to multiple
 // instrumentation systems at the same time, for example if your organization is
 // transitioning from one system to another.
-package multi
+package metrics
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"path/filepath"
     "github.com/spf13/viper"
 
-    "github.com/Schneizelw/mtggokit/metrics"
+    "github.com/Schneizelw/mtggokit/metrics/metrics"
     "github.com/Schneizelw/mtggokit/metrics/prometheus"
     "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
     "github.com/Schneizelw/mtggokit/metrics/metricslog"

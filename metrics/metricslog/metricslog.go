@@ -5,7 +5,7 @@
 package metricslog
 
 import (
-    "github.com/Schneizelw/mtggokit/metrics"
+    "github.com/Schneizelw/mtggokit/metrics/metrics"
     "github.com/Schneizelw/mtggokit/metrics/internal/lv"
 
     "github.com/Schneizelw/metricslog/client_golang/metricslog"
