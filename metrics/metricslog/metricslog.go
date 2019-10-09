@@ -5,8 +5,8 @@
 package metricslog
 
 import (
-    "github.com/Mintegral-official/mtggokit/metrics"
-    "github.com/Mintegral-official/mtggokit/metrics/internal/lv"
+    "github.com/Schneizelw/mtggokit/metrics"
+    "github.com/Schneizelw/mtggokit/metrics/internal/lv"
 
     "github.com/Schneizelw/metricslog/client_golang/metricslog"
 )
