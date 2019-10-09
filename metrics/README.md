@@ -49,9 +49,9 @@ func main() {
     var multiCount multi.Counter
     lables := []string{"httpCode", "httpMethod"}
     multiCount = multi.NewCounter("/project/conf/config.yaml", lables)
-    multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(1)
-    multiCount.with({"httpCode":"200","httpMethod":"GET"}).Add(2)
-    multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(3)
+    multiCount.With({"httpCode":"200","httpMethod":"POST"}).Add(1)
+    multiCount.With({"httpCode":"200","httpMethod":"GET"}).Add(2)
+    multiCount.With({"httpCode":"200","httpMethod":"POST"}).Add(3)
     time.Sleep(1000*time.Second)
 }
 ```
