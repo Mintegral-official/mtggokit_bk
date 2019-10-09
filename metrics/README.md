@@ -42,16 +42,16 @@ usage:
 ```golang 
 import (
     "time"
-    "github.com/mtggokit/metrics/multi"
+    "github.com/mtggokit/metrics"
 )
 func main() {
     var logger *log.Logger
-    var multiCount multi.Counter
+    var counter metrics.Counter
     lables := []string{"httpCode", "httpMethod"}
-    multiCount = multi.NewCounter("/project/conf/config.yaml", lables)
-    multiCount.With({"httpCode":"200","httpMethod":"POST"}).Add(1)
-    multiCount.With({"httpCode":"200","httpMethod":"GET"}).Add(2)
-    multiCount.With({"httpCode":"200","httpMethod":"POST"}).Add(3)
+    counter = multi.NewCounter("/project/conf/config.yaml", lables)
+    counter.With({"httpCode":"200","httpMethod":"POST"}).Add(1)
+    counter.With({"httpCode":"200","httpMethod":"GET"}).Add(2)
+    counter.With({"httpCode":"200","httpMethod":"POST"}).Add(3)
     time.Sleep(1000*time.Second)
 }
 ```
