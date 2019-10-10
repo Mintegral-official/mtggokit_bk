@@ -62,8 +62,10 @@ func (fs *LocalFileStreamer) Next() (container.DataMode, container.MapKey, inter
 	result := fs.cfg.DataParser.Parse([]byte(fs.scan.Text()), nil)
 	if result == nil {
 		fs.errorNum++
+		return container.DataModeAdd, nil, nil, errors.New(fmt.Sprintf("Parser error"))
 	}
 	fs.curLen = 0
+	fs.result = result
 	if fs.curLen < len(fs.result) {
 		r := fs.result[fs.curLen]
 		fs.curLen++
@@ -72,6 +74,7 @@ func (fs *LocalFileStreamer) Next() (container.DataMode, container.MapKey, inter
 		}
 		return r.DataMode, r.Key, r.Value, r.Err
 	}
+	fs.errorNum++
 	return container.DataModeAdd, nil, nil, errors.New(fmt.Sprintf("Index[%d] error, len[%d]", fs.curLen, len(fs.result)))
 }
 

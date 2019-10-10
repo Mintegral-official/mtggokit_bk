@@ -111,9 +111,10 @@ func (ms *MongoStreamer) Next() (container.DataMode, container.MapKey, interface
 	result := ms.curParser.Parse(ms.cursor.Current, ms.cfg.UserData)
 	if result == nil {
 		ms.errorNum++
+		return container.DataModeAdd, nil, nil, errors.New("Parse error")
 	}
-
 	ms.curLen = 0
+	ms.result = result
 	if ms.curLen < len(ms.result) {
 		r := ms.result[ms.curLen]
 		ms.curLen++
@@ -122,6 +123,7 @@ func (ms *MongoStreamer) Next() (container.DataMode, container.MapKey, interface
 		}
 		return r.DataMode, r.Key, r.Value, r.Err
 	}
+	ms.errorNum++
 	return container.DataModeAdd, nil, nil, errors.New(fmt.Sprintf("Index[%d] error, len[%d]", ms.curLen, len(ms.result)))
 }
 
