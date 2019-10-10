@@ -5,9 +5,9 @@
 package metrics
 
 import (
-	"fmt"
-	"strings"
-	"path/filepath"
+    "fmt"
+    "strings"
+    "path/filepath"
     "github.com/spf13/viper"
 
     "github.com/Schneizelw/mtggokit/metrics/metrics"
@@ -68,7 +68,7 @@ func newLogCounter(v *viper.Viper, lables []string) metrics.Counter {
 // newCounter returns a multi-counter, wrapping the passed counters.
 func newCounter(v *viper.Viper, lables []string) Counter {
     path := ""
-	isOpen := false
+    isOpen := false
     multiCounter := Counter{}
     for _, system := range monitorSystems {
         path = fmt.Sprintf("Open.%s", system)
@@ -93,10 +93,10 @@ func newCounter(v *viper.Viper, lables []string) Counter {
 
 func setViper(fileName string) *viper.Viper {
     configPath, configName := filepath.Split(fileName)
-	dotIndex := strings.LastIndex(configName, ".")
-	if dotIndex == -1 || configName[dotIndex:] != ".yaml" {
+    dotIndex := strings.LastIndex(configName, ".")
+    if dotIndex == -1 || configName[dotIndex:] != ".yaml" {
         panic("config file format must be yaml")
-	}
+    }
     v := viper.New()
     v.AddConfigPath(configPath)
     v.SetConfigName(configName[:dotIndex])
@@ -104,13 +104,13 @@ func setViper(fileName string) *viper.Viper {
     if err := v.ReadInConfig(); err != nil {
         panic(err)
     }
-	return v
+    return v
 }
 
 // NewCounter returns a multi-counter, wrapping the passed counters.
 func NewCounter(fileName string, lables []string) Counter {
     v := setViper(fileName)
-	return newCounter(v, lables)
+    return newCounter(v, lables)
 }
 
 // Add implements counter.
@@ -174,7 +174,7 @@ func newLogGauge(v *viper.Viper, lables []string) metrics.Gauge {
 
 func newGauge(v *viper.Viper, lables []string) Gauge {
     path := ""
-	isOpen := false
+    isOpen := false
     multiGauge := Gauge{}
     for _, system := range monitorSystems {
         path = fmt.Sprintf("Open.%s", system)
@@ -230,18 +230,18 @@ func (g Gauge) Add(delta float64) {
 type Summary []metrics.Histogram
 
 func newEsSummary(v *viper.Viper, lables []string) metrics.Histogram {
-	objectives := map[float64]float64 {
-		0.5 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile50"),
-		0.9 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile90"),
-		0.99: v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile99"),
-	}
+    objectives := map[float64]float64 {
+        0.5 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile50"),
+        0.9 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile90"),
+        0.99: v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile99"),
+    }
     baseOpts := stdelasticsearch.SummaryOpts{
         Namespace:  v.GetString("MonitorSystem.Default.Namespace"),
         Subsystem:  v.GetString("MonitorSystem.Default.Subsystem"),
         Name:       v.GetString("MonitorSystem.Default.Name"),
         Help:       v.GetString("MonitorSystem.Default.Help"),
-		Objectives: objectives,
-	}
+        Objectives: objectives,
+    }
     esOpts := stdelasticsearch.SummaryEsOpts{
         Host:      v.GetString("MonitorSystem.Elasticsearch.Host"),
         Port:      v.GetString("MonitorSystem.Elasticsearch.Port"),
@@ -263,18 +263,18 @@ func newPrometheusSummary(v *viper.Viper, lables []string) metrics.Histogram {
 }
 
 func newLogSummary(v *viper.Viper, lables []string) metrics.Histogram {
-	objectives := map[float64]float64 {
-		0.5 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile50"),
-		0.9 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile90"),
-		0.99: v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile99"),
-	}
+    objectives := map[float64]float64 {
+        0.5 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile50"),
+        0.9 : v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile90"),
+        0.99: v.GetFloat64("MonitorSystem.Metrics.Summary.Quantile99"),
+    }
     baseOpts := stdmetricslog.SummaryOpts{
         Namespace:  v.GetString("MonitorSystem.Default.Namespace"),
         Subsystem:  v.GetString("MonitorSystem.Default.Subsystem"),
         Name:       v.GetString("MonitorSystem.Default.Name"),
         Help:       v.GetString("MonitorSystem.Default.Help"),
-		Objectives: objectives,
-	}
+        Objectives: objectives,
+    }
     logOpts := stdmetricslog.SummaryLogOpts{
         Interval:  v.GetInt("MonitorSystem.Log.Interval"),
     }
@@ -283,7 +283,7 @@ func newLogSummary(v *viper.Viper, lables []string) metrics.Histogram {
 
 func newSummary(v *viper.Viper, lables []string) Summary {
     path := ""
-	isOpen := false
+    isOpen := false
     multiSummary := Summary{}
     for _, system := range monitorSystems {
         path = fmt.Sprintf("Open.%s", system)
