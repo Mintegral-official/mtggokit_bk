@@ -60,6 +60,7 @@ func newLogCounter(v *viper.Viper, lables []string) metrics.Counter {
         Help:      v.GetString("MonitorSystem.Default.Help"),
     }
     logOpts := stdmetricslog.CounterLogOpts{
+        LogPath:   v.GetString("MonitorSystem.Log.LogPath"),
         Interval:  v.GetInt("MonitorSystem.Log.Interval"),
     }
     return metricslog.NewCounterFrom(baseOpts, logOpts, lables)
@@ -167,6 +168,7 @@ func newLogGauge(v *viper.Viper, lables []string) metrics.Gauge {
         Help:      v.GetString("MonitorSystem.Default.Help"),
     }
     logOpts := stdmetricslog.GaugeLogOpts{
+        LogPath:   v.GetString("MonitorSystem.Log.LogPath"),
         Interval:  v.GetInt("MonitorSystem.Log.Interval"),
     }
     return metricslog.NewGaugeFrom(baseOpts, logOpts, lables)
@@ -276,6 +278,7 @@ func newLogSummary(v *viper.Viper, lables []string) metrics.Histogram {
         Objectives: objectives,
     }
     logOpts := stdmetricslog.SummaryLogOpts{
+        LogPath:   v.GetString("MonitorSystem.Log.LogPath"),
         Interval:  v.GetInt("MonitorSystem.Log.Interval"),
     }
     return metricslog.NewSummaryFrom(baseOpts, logOpts, lables)
