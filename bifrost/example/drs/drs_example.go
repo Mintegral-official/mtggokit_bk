@@ -6,6 +6,7 @@ import (
 	"github.com/Mintegral-official/mtggokit/bifrost"
 	"github.com/Mintegral-official/mtggokit/bifrost/container"
 	"github.com/Mintegral-official/mtggokit/bifrost/streamer"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"strconv"
@@ -14,10 +15,11 @@ import (
 )
 
 type UserData struct {
-	Bifrost        *bifrost.Bifrost
-	PackageName    []string
-	CampaignUptime int64
-	CreativeUptime int64
+	Bifrost             *bifrost.Bifrost
+	PackageName         []string
+	CampaignUptime      int64
+	CreativeUptime      int64
+	AuditCreativeUptime int64
 }
 
 type CampaignIdsParser struct {
@@ -102,6 +104,30 @@ func (*CreativeParser) Parse(data []byte, userData interface{}) []streamer.Parse
 		ud.CreativeUptime = creative.Uptime
 	}
 	return []streamer.ParserResult{{container.DataModeAdd, container.I64Key(creative.CampaignId), &creative, nil}}
+}
+
+type AdxAuditCreativeInfo struct {
+	CampaignId  int64  `bson:"campaignId,omitempty" json:"campaignId"`
+	CountryCode string `bson:"countryCode,omitempty" json:"countryCode"`
+	PackageName string `bson:"packageName,omitempty" json:"packageName"`
+}
+type AdxAuditCreativeParser struct {
+}
+
+func (*AdxAuditCreativeParser) Parse(data []byte, userData interface{}) []streamer.ParserResult {
+	ud, ok := userData.(*UserData)
+	if !ok {
+		return []streamer.ParserResult{{container.DataModeAdd, nil, nil, errors.New("user data parse error")}}
+	}
+	creative := &AdxAuditCreativeInfo{}
+
+	if err := bson.Unmarshal(data, &creative); err != nil {
+		fmt.Println("bson.Unmarsnal error:" + err.Error())
+	}
+	if ud.AuditCreativeUptime < ud.CreativeUptime {
+		ud.AuditCreativeUptime = ud.CreativeUptime
+	}
+	return []streamer.ParserResult{{container.DataModeAdd, container.I64Key(creative.CampaignId), creative, nil}}
 }
 
 func getCampaigIdsStreamer() streamer.Streamer {
@@ -248,6 +274,62 @@ func getCreativeStreamer(bf *bifrost.Bifrost, ud *UserData) streamer.Streamer {
 	return ms
 }
 
+func getAdxAuditCreativeStreamer(ud *UserData) streamer.Streamer {
+	// 创建 creative Streamer
+	ms, err := streamer.NewMongoStreamer(&streamer.MongoStreamerCfg{
+		Name:           "adxAuditCreativeInfo",
+		UpdatMode:      streamer.Dynamic,
+		IncInterval:    5,
+		IsSync:         true,
+		URI:            "mongodb://172.20.92.248:27050",
+		DB:             "dsp_audit",
+		Collection:     "group_creative_audit",
+		ConnectTimeout: 1000000,
+		ReadTimeout:    2000000,
+		BaseParser:     &AdxAuditCreativeParser{},
+		IncParser:      &AdxAuditCreativeParser{},
+		UserData:       ud,
+		Logger:         logrus.New(),
+		OnBeforeBase: func(userData interface{}) interface{} {
+			ud, ok := userData.(*UserData)
+			if !ok {
+				return nil
+			}
+			campaignIds := GetCampaigns(ud)
+			if campaignIds == nil {
+				return nil
+			}
+			incQuery := bson.M{"campaignId": bson.M{"$in": campaignIds}, "status": 1}
+			return incQuery
+		},
+		OnBeforeInc: func(userData interface{}) interface{} {
+
+			ud, ok := userData.(*UserData)
+			if !ok {
+				return nil
+			}
+			campaignIds := GetCampaigns(ud)
+			if campaignIds == nil {
+				return nil
+			}
+			incQuery := bson.M{"campaignId": bson.M{"$in": campaignIds}, "updated": bson.M{"$gte": ud.AuditCreativeUptime - 5, "$lte": int(time.Now().Unix())}}
+			return incQuery
+		},
+	})
+	if err != nil {
+		fmt.Println("streamer init err, error:", err.Error())
+	}
+	if ms == nil {
+		fmt.Println("streamer init err")
+		return nil
+	}
+	ms.SetContainer(container.CreateBlockingMapContainer(100, 0))
+	if err := ms.UpdateData(context.Background()); err != nil {
+		fmt.Println("Creative Streamer updateData error: ", err.Error())
+	}
+	return ms
+}
+
 func run() {
 	// 初始化 Bifrost
 	bf := bifrost.NewBifrost()
@@ -271,6 +353,12 @@ func run() {
 	// 创建 creative Streamer
 	creativeStreamer := getCreativeStreamer(bf, ud)
 	if err := bf.Register("creativeInfo", creativeStreamer); err != nil {
+		fmt.Println("bf.Register creativeInfo error ")
+	}
+
+	// 创建 creative Streamer
+	auditCreativeStream := getAdxAuditCreativeStreamer(ud)
+	if err := bf.Register("AuditCreativeInfo", auditCreativeStream); err != nil {
 		fmt.Println("bf.Register creativeInfo error ")
 	}
 

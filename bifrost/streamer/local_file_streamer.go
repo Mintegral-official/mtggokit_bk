@@ -142,12 +142,12 @@ func (fs *LocalFileStreamer) updateData(ctx context.Context) error {
 
 func (ms *LocalFileStreamer) InfoStatus(s string) {
 	if ms.cfg.Logger != nil {
-		ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+		ms.cfg.Logger.Infof("streamer[%s] %s, totalNum[%d], errorNum[%d], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, (ms.endTime-ms.startTime)/10e6)
 	}
 }
 
 func (ms *LocalFileStreamer) WarnStatus(s string) {
 	if ms.cfg.Logger != nil {
-		ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], userData[%s], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, ms.cfg.UserData, (ms.endTime-ms.startTime)/10e6)
+		ms.cfg.Logger.Warnf("streamer[%s] %s, totalNum[%d], errorNum[%d], timeUsed[%d]", ms.cfg.Name, s, ms.totalNum, ms.errorNum, (ms.endTime-ms.startTime)/10e6)
 	}
 }

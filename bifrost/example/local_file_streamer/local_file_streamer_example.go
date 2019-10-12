@@ -32,6 +32,12 @@ func main() {
 	c := make(chan os.Signal)
 	signal.Notify(c)
 	_ = lfs.UpdateData(ctx)
+
+	value, err := lfs.GetContainer().Get(container.StrKey("abc"))
+	if err == nil {
+		fmt.Println(value)
+	}
+
 	s := <-c
 	fmt.Println("退出信号", s)
 }
