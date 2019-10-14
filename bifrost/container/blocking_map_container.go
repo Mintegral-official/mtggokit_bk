@@ -2,29 +2,27 @@ package container
 
 import (
 	"fmt"
-	"github.com/easierway/concurrent_map"
 	"github.com/pkg/errors"
+	"sync"
 )
 
 // 多线程读写安全的container，支持增量
 type BlockingMapContainer struct {
-	innerData    *concurrent_map.ConcurrentMap
-	numPartision int
-	errorNum     int64
-	totalNum     int64
-	Tolerate     float64
+	innerData *sync.Map
+	errorNum  int64
+	totalNum  int64
+	Tolerate  float64
 }
 
 func CreateBlockingMapContainer(numPartision int, tolerate float64) *BlockingMapContainer {
 	return &BlockingMapContainer{
-		innerData:    concurrent_map.CreateConcurrentMap(numPartision),
-		numPartision: numPartision,
-		Tolerate:     tolerate,
+		innerData: &sync.Map{},
+		Tolerate:  tolerate,
 	}
 }
 
 func (bm *BlockingMapContainer) Get(key MapKey) (interface{}, error) {
-	data, in := bm.innerData.Get(key)
+	data, in := bm.innerData.Load(key)
 	if !in {
 		return nil, errors.New("Not exist")
 	}
@@ -32,16 +30,16 @@ func (bm *BlockingMapContainer) Get(key MapKey) (interface{}, error) {
 }
 
 func (bm *BlockingMapContainer) Set(key MapKey, value interface{}) error {
-	bm.innerData.Set(key, value)
+	bm.innerData.Store(key, value)
 	return nil
 }
 
 func (bm *BlockingMapContainer) Del(key MapKey, value interface{}) {
-	bm.innerData.Del(key)
+	bm.innerData.Delete(key)
 }
 
 func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
-	tmpM := concurrent_map.CreateConcurrentMap(bm.numPartision)
+	tmpM := &sync.Map{}
 	bm.errorNum = 0
 	bm.totalNum = 0
 	for iterator.HasNext() {
@@ -53,10 +51,9 @@ func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
 		}
 		switch m {
 		case DataModeAdd, DataModeUpdate:
-			tmpM.Set(k, v)
-			fmt.Println("BlockingMapContainer: ", bm.numPartision, tmpM, k.PartitionKey(), k.PartitionKey()%int64(100))
+			tmpM.Store(k, v)
 		case DataModeDel:
-			tmpM.Del(k)
+			tmpM.Delete(k)
 		}
 	}
 	if bm.totalNum == 0 {
@@ -80,7 +77,7 @@ func (bm *BlockingMapContainer) LoadInc(iterator DataIterator) error {
 		}
 		switch m {
 		case DataModeAdd, DataModeUpdate:
-			bm.innerData.Set(k, v)
+			bm.innerData.Store(k, v)
 		case DataModeDel:
 			bm.Del(k, v)
 		}
