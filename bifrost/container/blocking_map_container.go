@@ -22,7 +22,7 @@ func CreateBlockingMapContainer(numPartision int, tolerate float64) *BlockingMap
 }
 
 func (bm *BlockingMapContainer) Get(key MapKey) (interface{}, error) {
-	data, in := bm.innerData.Load(key)
+	data, in := bm.innerData.Load(key.Value())
 	if !in {
 		return nil, errors.New("Not exist")
 	}
@@ -30,12 +30,12 @@ func (bm *BlockingMapContainer) Get(key MapKey) (interface{}, error) {
 }
 
 func (bm *BlockingMapContainer) Set(key MapKey, value interface{}) error {
-	bm.innerData.Store(key, value)
+	bm.innerData.Store(key.Value(), value)
 	return nil
 }
 
 func (bm *BlockingMapContainer) Del(key MapKey, value interface{}) {
-	bm.innerData.Delete(key)
+	bm.innerData.Delete(key.Value())
 }
 
 func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
@@ -51,9 +51,9 @@ func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
 		}
 		switch m {
 		case DataModeAdd, DataModeUpdate:
-			tmpM.Store(k, v)
+			tmpM.Store(k.Value(), v)
 		case DataModeDel:
-			tmpM.Delete(k)
+			tmpM.Delete(k.Value())
 		}
 	}
 	if bm.totalNum == 0 {
@@ -77,7 +77,7 @@ func (bm *BlockingMapContainer) LoadInc(iterator DataIterator) error {
 		}
 		switch m {
 		case DataModeAdd, DataModeUpdate:
-			bm.innerData.Store(k, v)
+			bm.innerData.Store(k.Value(), v)
 		case DataModeDel:
 			bm.Del(k, v)
 		}
