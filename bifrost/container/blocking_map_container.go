@@ -54,7 +54,7 @@ func (bm *BlockingMapContainer) LoadBase(iterator DataIterator) error {
 		switch m {
 		case DataModeAdd, DataModeUpdate:
 			tmpM.Set(k, v)
-			fmt.Println("BlockingMapContainer: ", bm.numPartision, tmpM)
+			fmt.Println("BlockingMapContainer: ", bm.numPartision, tmpM, k.PartitionKey(), k.PartitionKey()%int64(100))
 		case DataModeDel:
 			tmpM.Del(k)
 		}
