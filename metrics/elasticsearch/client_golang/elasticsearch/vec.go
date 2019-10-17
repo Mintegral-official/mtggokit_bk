@@ -17,6 +17,7 @@ import (
     "fmt"
     "sync"
     "time"
+    "math"
     "bytes"
     "io"
     "io/ioutil"
@@ -281,6 +282,9 @@ func setMetricData(metricType int,  dtoMetric dto.Metric, docMap map[string]inte
         for _, dtoQuantile := range dtoQuantiles {
             quantile := dtoQuantile.GetQuantile()
             value := dtoQuantile.GetValue()
+            if math.IsNaN(value) {
+                value = 0.0
+            }
             if quantile == 0.5 {
                 docMap[QUANTILE_50] = value
             } else if quantile == 0.9 {
