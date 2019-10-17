@@ -16,8 +16,8 @@ import (
     "github.com/Schneizelw/mtggokit/metrics/metricslog"
 
     stdprometheus "github.com/prometheus/client_golang/prometheus"
-    stdelasticsearch "github.com/Schneizelw/elasticsearch/client_golang/elasticsearch"
-    stdmetricslog "github.com/Schneizelw/metricslog/client_golang/metricslog"
+    stdelasticsearch "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    stdmetricslog "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 // Counter collects multiple individual counters and treats them as a unit.

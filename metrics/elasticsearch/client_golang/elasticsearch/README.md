@@ -1,0 +1,1 @@
+See [![go-doc](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch?status.svg)](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch).
