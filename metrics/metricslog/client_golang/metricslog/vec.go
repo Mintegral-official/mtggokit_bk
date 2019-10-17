@@ -17,7 +17,7 @@ import (
     "fmt"
     "sync"
     "time"
-	"math"
+    "math"
     "encoding/json"
     "github.com/cihub/seelog"
     "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
@@ -255,9 +255,9 @@ func setMetricData(metricType int, dtoMetric dto.Metric, line map[string]interfa
         for _, dtoQuantile := range dtoQuantiles {
             quantile := dtoQuantile.GetQuantile()
             value := dtoQuantile.GetValue()
-		    if math.IsNaN(value) {
+            if math.IsNaN(value) {
                 value = 0.0
-			}
+            }
             if quantile == 0.5 {
                 line[QUANTILE_50] = value
             } else if quantile == 0.9 {

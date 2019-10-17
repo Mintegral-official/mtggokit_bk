@@ -46,8 +46,8 @@ Metrics:
 ```golang 
 //use
 import (
-	"time"
-	"github.com/mtggokit/metrics/multi"
+    "time"
+    "github.com/mtggokit/metrics/multi"
 )
 func main() {
     var logger *log.Logger
@@ -57,7 +57,7 @@ func main() {
     multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(1)
     multiCount.with({"httpCode":"200","httpMethod":"GET"}).Add(2)
     multiCount.with({"httpCode":"200","httpMethod":"POST"}).Add(3)
-	time.Sleep(1000*time.Second)
+    time.Sleep(1000*time.Second)
 }
 ```
 
