@@ -22,7 +22,7 @@ import (
     "testing"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
 )
 
 func makeInstrumentedClient() (*http.Client, *elasticsearch.Registry) {

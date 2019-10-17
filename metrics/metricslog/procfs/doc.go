@@ -22,7 +22,7 @@
 //      "fmt"
 //      "log"
 //
-//      "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs"
+//      "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs"
 //    )
 //
 //    func main() {

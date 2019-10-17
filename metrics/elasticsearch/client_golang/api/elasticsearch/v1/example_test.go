@@ -21,8 +21,8 @@ import (
     "os"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/api"
-    v1 "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/api/elasticsearch/v1"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/api"
+    v1 "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/api/elasticsearch/v1"
 )
 
 func ExampleAPI_Query() {

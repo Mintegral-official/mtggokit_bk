@@ -20,7 +20,7 @@ import (
     "strings"
     "text/template"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 // Build information. Populated at build-time.

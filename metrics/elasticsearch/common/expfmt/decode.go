@@ -20,10 +20,10 @@ import (
     "mime"
     "net/http"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 
     "github.com/matttproud/golang_protobuf_extensions/pbutil"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/model"
 )
 
 // Decoder types decode an input stream into metric families.

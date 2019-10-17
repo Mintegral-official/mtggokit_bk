@@ -20,9 +20,9 @@ import (
 
     "github.com/golang/protobuf/proto"
     "github.com/matttproud/golang_protobuf_extensions/pbutil"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/internal/bitbucket.org/ww/goautoneg"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/internal/bitbucket.org/ww/goautoneg"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 )
 
 // Encoder types encode metric families into an underlying wire protocol.

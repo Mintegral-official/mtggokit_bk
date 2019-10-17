@@ -28,7 +28,7 @@ cpp/metrics.pb.h: metrics.proto
 go: go/metrics.pb.go
 
 go/metrics.pb.go: metrics.proto
-	protoc $< --go_out=import_path=github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/,paths=source_relative:go/
+	protoc $< --go_out=import_path=github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/,paths=source_relative:go/
 
 java: src/main/java/io/metricslog/client/Metrics.java pom.xml
 	mvn clean compile package

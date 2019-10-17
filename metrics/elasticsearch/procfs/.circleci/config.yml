@@ -22,7 +22,7 @@ jobs:
     - image: circleci/golang:<< parameters.go_version >>
     environment:
       GOOS: "<< parameters.os >>"
-    working_directory: /go/src/github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs
+    working_directory: /go/src/github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs
     steps:
     - checkout
     - << parameters.command >>

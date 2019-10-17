@@ -5,10 +5,10 @@
 package metricslog
 
 import (
-    "github.com/Schneizelw/mtggokit/metrics/metrics"
-    "github.com/Schneizelw/mtggokit/metrics/internal/lv"
+    "github.com/Mintegral-official/mtggokit/metrics/metrics"
+    "github.com/Mintegral-official/mtggokit/metrics/internal/lv"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 // Counter implements Counter, via a Prometheus CounterVec.

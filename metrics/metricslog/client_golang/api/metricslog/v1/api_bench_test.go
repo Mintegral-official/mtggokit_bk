@@ -20,7 +20,7 @@ import (
 
     jsoniter "github.com/json-iterator/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
 )
 
 func generateData(timeseries, datapoints int) model.Matrix {

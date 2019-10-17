@@ -22,7 +22,7 @@ import (
 )
 
 // SysReadFile is a simplified ioutil.ReadFile that invokes syscall.Read directly.
-// https://github.com/Schneizelw/mtggokit/metrics/elasticsearch/node_exporter/pull/728/files
+// https://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/node_exporter/pull/728/files
 func SysReadFile(file string) (string, error) {
     f, err := os.Open(file)
     if err != nil {

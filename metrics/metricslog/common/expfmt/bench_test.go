@@ -22,7 +22,7 @@ import (
 
     "github.com/matttproud/golang_protobuf_extensions/pbutil"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 var parser TextParser

@@ -15,7 +15,7 @@ syntax = "proto2";
 
 package io.elasticsearch.client;
 option java_package = "io.elasticsearch.client";
-option go_package = "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go;io_elasticsearch_client";
+option go_package = "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go;io_elasticsearch_client";
 
 message LabelPair {
   optional string name  = 1;

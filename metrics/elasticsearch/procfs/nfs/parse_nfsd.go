@@ -19,7 +19,7 @@ import (
     "io"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/util"
 )
 
 // ParseServerRPCStats returns stats read from /proc/net/rpc/nfsd

@@ -1,4 +1,4 @@
-module github.com/Schneizelw/mtggokit/metrics/metricslog/procfs
+module github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs
 
 require (
 	github.com/google/go-cmp v0.3.0

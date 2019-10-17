@@ -20,7 +20,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/util"
 )
 
 // Crypto holds info parsed from /proc/crypto.

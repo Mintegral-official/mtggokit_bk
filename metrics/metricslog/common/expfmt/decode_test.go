@@ -22,9 +22,9 @@ import (
     "testing"
 
     "github.com/golang/protobuf/proto"
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
 )
 
 func TestTextDecoder(t *testing.T) {

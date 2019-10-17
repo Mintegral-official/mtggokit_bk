@@ -16,7 +16,7 @@ package elasticsearch_test
 import (
     "os"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
 )
 
 var (

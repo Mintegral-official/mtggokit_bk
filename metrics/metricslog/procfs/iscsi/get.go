@@ -23,7 +23,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/util"
 )
 
 // GetStats is the main iscsi status information func

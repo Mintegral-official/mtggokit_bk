@@ -13,7 +13,7 @@
     </parent>
 
     <name>Prometheus Client Data Model</name>
-    <url>http://github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model</url>
+    <url>http://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model</url>
     <description>
       Prometheus Client Data Model: Generated Protocol Buffer Assets
     </description>

@@ -20,8 +20,8 @@ import (
 	"math"
     "encoding/json"
     "github.com/cihub/seelog"
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 const (

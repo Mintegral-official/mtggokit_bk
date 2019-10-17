@@ -21,8 +21,8 @@ import (
     "os"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/api"
-    v1 "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/api/metricslog/v1"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/api"
+    v1 "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/api/metricslog/v1"
 )
 
 func ExampleAPI_Query() {

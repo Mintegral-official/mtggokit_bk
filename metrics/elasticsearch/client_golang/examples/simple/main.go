@@ -19,7 +19,7 @@ import (
     "log"
     "net/http"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch/promhttp"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch/promhttp"
 )
 
 var addr = flag.String("listen-address", ":8080", "The address to listen on for HTTP requests.")

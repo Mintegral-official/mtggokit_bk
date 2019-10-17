@@ -19,7 +19,7 @@ import (
     "os"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/fs"
 )
 
 // ReplyCache models the "rc" line.

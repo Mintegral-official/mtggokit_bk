@@ -26,11 +26,11 @@ import (
     "unicode/utf8"
 
     "github.com/golang/protobuf/proto"
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/expfmt"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog/internal"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog/internal"
 )
 
 const (

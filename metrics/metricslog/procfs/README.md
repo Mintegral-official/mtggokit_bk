@@ -6,9 +6,9 @@ metrics from the pseudo-filesystems /proc and /sys.
 *WARNING*: This package is a work in progress. Its API may still break in
 backwards-incompatible ways without warnings. Use it at your own risk.
 
-[![GoDoc](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/procfs?status.png)](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/procfs)
+[![GoDoc](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs?status.png)](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs)
 [![Build Status](https://travis-ci.org/metricslog/procfs.svg?branch=master)](https://travis-ci.org/metricslog/procfs)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Schneizelw/mtggokit/metrics/metricslog/procfs)](https://goreportcard.com/report/github.com/Schneizelw/mtggokit/metrics/metricslog/procfs)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs)](https://goreportcard.com/report/github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs)
 
 ## Usage
 

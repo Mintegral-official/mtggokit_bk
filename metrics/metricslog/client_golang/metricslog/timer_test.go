@@ -16,7 +16,7 @@ package metricslog
 import (
     "testing"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 func TestTimerObserve(t *testing.T) {

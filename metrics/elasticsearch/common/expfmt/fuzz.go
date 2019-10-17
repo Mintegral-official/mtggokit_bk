@@ -20,7 +20,7 @@ import "bytes"
 
 // Fuzz text metric parser with with github.com/dvyukov/go-fuzz:
 //
-//     go-fuzz-build github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/expfmt
+//     go-fuzz-build github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/expfmt
 //     go-fuzz -bin expfmt-fuzz.zip -workdir fuzz
 //
 // Further input samples should go in the folder fuzz/corpus.

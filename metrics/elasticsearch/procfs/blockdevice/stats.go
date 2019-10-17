@@ -21,7 +21,7 @@ import (
     "os"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/fs"
 )
 
 // Info contains identifying information for a block device such as a disk drive

@@ -581,7 +581,7 @@ func parseNFSTransportStats(ss []string, statVersion string) (*NFSTransportStats
     //
     // Note: slice length must be set to length of v1.1 stats to avoid a panic when
     // only v1.0 stats are present.
-    // See: https://github.com/Schneizelw/mtggokit/metrics/elasticsearch/node_exporter/issues/571.
+    // See: https://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/node_exporter/issues/571.
     ns := make([]uint64, fieldTransport11TCPLen)
     for i, s := range ss {
         n, err := strconv.ParseUint(s, 10, 64)

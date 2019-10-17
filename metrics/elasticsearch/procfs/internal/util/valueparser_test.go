@@ -17,7 +17,7 @@ import (
     "testing"
 
     "github.com/google/go-cmp/cmp"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/util"
 )
 
 func TestValueParser(t *testing.T) {

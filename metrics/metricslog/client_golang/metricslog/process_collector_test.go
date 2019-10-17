@@ -22,10 +22,10 @@ import (
     "regexp"
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/expfmt"
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 func TestProcessCollector(t *testing.T) {

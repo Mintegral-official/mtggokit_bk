@@ -22,7 +22,7 @@ import (
     "regexp"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/util"
 )
 
 // Zoneinfo holds info parsed from /proc/zoneinfo.

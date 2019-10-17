@@ -22,7 +22,7 @@ import (
     "path/filepath"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/util"
 )
 
 // The VM interface is described at

@@ -16,7 +16,7 @@ package metricslog_test
 import (
     "net/http"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 var (

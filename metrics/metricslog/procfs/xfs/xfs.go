@@ -19,7 +19,7 @@ import (
     "path/filepath"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/fs"
 )
 
 // Stats contains XFS filesystem runtime statistics, parsed from

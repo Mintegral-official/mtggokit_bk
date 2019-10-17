@@ -21,7 +21,7 @@ import (
 
     "github.com/golang/protobuf/proto"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 func TestCreate(t *testing.T) {

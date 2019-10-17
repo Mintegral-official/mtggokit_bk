@@ -19,7 +19,7 @@ import (
     "io"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/util"
 )
 
 // ParseStats parses a Stats from an input io.Reader, using the format

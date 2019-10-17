@@ -31,7 +31,7 @@
 //
 // See the documentation of the Pushgateway to understand the meaning of
 // the grouping key and the differences between Push and Add:
-// https://github.com/Schneizelw/mtggokit/metrics/elasticsearch/pushgateway
+// https://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/pushgateway
 package push
 
 import (
@@ -43,10 +43,10 @@ import (
     "net/url"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/expfmt"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/model"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
 )
 
 const (

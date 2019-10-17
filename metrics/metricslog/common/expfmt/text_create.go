@@ -23,9 +23,9 @@ import (
     "strings"
     "sync"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 // enhancedWriter has all the enhanced write functions needed here. bufio.Writer

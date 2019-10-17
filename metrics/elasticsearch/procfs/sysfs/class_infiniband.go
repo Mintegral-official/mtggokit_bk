@@ -23,7 +23,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/util"
 )
 
 const infinibandClassPath = "class/infiniband"
@@ -304,7 +304,7 @@ func parseInfiniBandCounters(portPath string) (*InfiniBandCounters, error) {
         }
 
         if err := vp.Err(); err != nil {
-            // Ugly workaround for handling https://github.com/Schneizelw/mtggokit/metrics/elasticsearch/node_exporter/issues/966
+            // Ugly workaround for handling https://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/node_exporter/issues/966
             // when counters are `N/A (not available)`.
             // This was already patched and submitted, see
             // https://www.spinics.net/lists/linux-rdma/msg68596.html
@@ -362,7 +362,7 @@ func parseInfiniBandCounters(portPath string) (*InfiniBandCounters, error) {
         }
 
         if err := vp.Err(); err != nil {
-            // Ugly workaround for handling https://github.com/Schneizelw/mtggokit/metrics/elasticsearch/node_exporter/issues/966
+            // Ugly workaround for handling https://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/node_exporter/issues/966
             // when counters are `N/A (not available)`.
             // This was already patched and submitted, see
             // https://www.spinics.net/lists/linux-rdma/msg68596.html

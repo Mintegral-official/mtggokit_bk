@@ -19,7 +19,7 @@ import (
     "regexp"
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/expfmt"
 )
 
 func TestWindowsProcessCollector(t *testing.T) {

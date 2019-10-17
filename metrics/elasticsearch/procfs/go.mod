@@ -1,4 +1,4 @@
-module github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs
+module github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs
 
 require (
 	github.com/google/go-cmp v0.3.0

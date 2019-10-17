@@ -27,9 +27,9 @@ import (
 
     json "github.com/json-iterator/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/model"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/api"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/api"
 )
 
 func init() {

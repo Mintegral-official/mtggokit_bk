@@ -19,7 +19,7 @@ import (
     "strings"
     "unicode/utf8"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
 )
 
 // Labels represents a collection of label name -> value mappings. This type is

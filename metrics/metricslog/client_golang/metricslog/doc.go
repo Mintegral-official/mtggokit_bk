@@ -31,8 +31,8 @@
 //      "log"
 //      "net/http"
 //
-//      "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
-//      "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog/promhttp"
+//      "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
+//      "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog/promhttp"
 //    )
 //
 //    var (

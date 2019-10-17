@@ -26,9 +26,9 @@ import (
     "testing"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 func TestSanitize(t *testing.T) {

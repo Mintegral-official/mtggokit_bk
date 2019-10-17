@@ -17,7 +17,7 @@ package xfs_test
 import (
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/xfs"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/xfs"
 )
 
 func TestReadProcStat(t *testing.T) {

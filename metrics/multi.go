@@ -10,14 +10,14 @@ import (
     "path/filepath"
     "github.com/spf13/viper"
 
-    "github.com/Schneizelw/mtggokit/metrics/metrics"
-    "github.com/Schneizelw/mtggokit/metrics/prometheus"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch"
-    "github.com/Schneizelw/mtggokit/metrics/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metrics"
+    "github.com/Mintegral-official/mtggokit/metrics/prometheus"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog"
 
     stdprometheus "github.com/prometheus/client_golang/prometheus"
-    stdelasticsearch "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
-    stdmetricslog "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    stdelasticsearch "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    stdmetricslog "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 // Counter collects multiple individual counters and treats them as a unit.

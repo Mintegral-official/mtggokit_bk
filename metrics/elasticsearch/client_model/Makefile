@@ -28,7 +28,7 @@ cpp/metrics.pb.h: metrics.proto
 go: go/metrics.pb.go
 
 go/metrics.pb.go: metrics.proto
-	protoc $< --go_out=import_path=github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/,paths=source_relative:go/
+	protoc $< --go_out=import_path=github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/,paths=source_relative:go/
 
 java: src/main/java/io/elasticsearch/client/Metrics.java pom.xml
 	mvn clean compile package

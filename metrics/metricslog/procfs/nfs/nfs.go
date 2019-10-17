@@ -19,7 +19,7 @@ import (
     "os"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/fs"
 )
 
 // ReplyCache models the "rc" line.

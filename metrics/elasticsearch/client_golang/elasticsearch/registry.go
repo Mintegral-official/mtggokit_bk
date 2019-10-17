@@ -26,11 +26,11 @@ import (
     "unicode/utf8"
 
     "github.com/golang/protobuf/proto"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/expfmt"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch/internal"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch/internal"
 )
 
 const (

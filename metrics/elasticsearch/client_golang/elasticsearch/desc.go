@@ -20,9 +20,9 @@ import (
     "strings"
 
     "github.com/golang/protobuf/proto"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/model"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 )
 
 // Desc is the descriptor used by every Prometheus Metric. It is essentially

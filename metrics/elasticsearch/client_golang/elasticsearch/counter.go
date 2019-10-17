@@ -20,7 +20,7 @@ import (
     "time"
     "sync/atomic"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 )
 
 // Counter is a Metric that represents a single numerical value that only ever

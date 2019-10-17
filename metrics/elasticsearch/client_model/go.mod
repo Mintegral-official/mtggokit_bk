@@ -1,4 +1,4 @@
-module github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model
+module github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model
 
 go 1.9
 

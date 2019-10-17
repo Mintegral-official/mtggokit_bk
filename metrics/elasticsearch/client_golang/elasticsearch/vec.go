@@ -24,8 +24,8 @@ import (
     "net/http"
     "encoding/json"
     "github.com/cihub/seelog"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/model"
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/model"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 )
 
 const (

@@ -9,7 +9,7 @@ setup(
     author_email = 'matt.proud@gmail.com',
     description = 'Data model artifacts for the Prometheus client.',
     license = 'Apache License 2.0',
-    url = 'http://github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model',
+    url = 'http://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model',
     packages = ['elasticsearch', 'elasticsearch/client', 'elasticsearch/client/model'],
     package_dir = {'': 'python'},
     requires = ['protobuf(==2.4.1)'],

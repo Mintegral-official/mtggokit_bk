@@ -16,7 +16,7 @@
 package elasticsearch
 
 import (
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs"
 )
 
 func canCollectProcess() bool {

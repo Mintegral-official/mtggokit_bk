@@ -1,8 +1,8 @@
 # Prometheus Go client library
 
 [![Build Status](https://travis-ci.org/metricslog/client_golang.svg?branch=master)](https://travis-ci.org/metricslog/client_golang)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang)](https://goreportcard.com/report/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang)
-[![go-doc](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang?status.svg)](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang)](https://goreportcard.com/report/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang)
+[![go-doc](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang?status.svg)](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang)
 
 This is the [Go](http://golang.org) client library for
 [Prometheus](http://metricslog.io). It has two separate parts, one for
@@ -22,33 +22,33 @@ CHANGELOG.md.
 
 Features that require breaking changes in the stable parts of the repository
 are being batched up and tracked in the [v2
-milestone](https://github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/milestone/2). The v2
+milestone](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/milestone/2). The v2
 development happens in a [separate
-branch](https://github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/tree/dev-v2) for the time
+branch](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/tree/dev-v2) for the time
 being. v2 releases off that branch will happen once sufficient stability is
 reached. In view of the widespread use of this repository, v1 and v2 will
 coexist for a while to enable a convenient transition.
 
 ## Instrumenting applications
 
-[![code-coverage](http://gocover.io/_badge/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog)](http://gocover.io/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog) [![go-doc](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog?status.svg)](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog)
+[![code-coverage](http://gocover.io/_badge/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog)](http://gocover.io/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog) [![go-doc](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog?status.svg)](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog)
 
 The
-[`metricslog` directory](https://github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/tree/master/metricslog)
+[`metricslog` directory](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/tree/master/metricslog)
 contains the instrumentation library. See the
 [guide](https://metricslog.io/docs/guides/go-application/) on the Prometheus
 website to learn more about instrumenting applications.
 
 The
-[`examples` directory](https://github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/tree/master/examples)
+[`examples` directory](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/tree/master/examples)
 contains simple examples of instrumented code.
 
 ## Client for the Prometheus HTTP API
 
-[![code-coverage](http://gocover.io/_badge/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/api/metricslog/v1)](http://gocover.io/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/api/metricslog/v1) [![go-doc](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/api/metricslog?status.svg)](https://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/api)
+[![code-coverage](http://gocover.io/_badge/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/api/metricslog/v1)](http://gocover.io/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/api/metricslog/v1) [![go-doc](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/api/metricslog?status.svg)](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/api)
 
 The
-[`api/metricslog` directory](https://github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/tree/master/api/metricslog)
+[`api/metricslog` directory](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/tree/master/api/metricslog)
 contains the client for the
 [Prometheus HTTP API](http://metricslog.io/docs/querying/api/). It allows you
 to write Go applications that query time series data from a Prometheus
@@ -57,10 +57,10 @@ server. It is still in alpha stage.
 ## Where is `model`, `extraction`, and `text`?
 
 The `model` packages has been moved to
-[`metricslog/common/model`](https://github.com/Schneizelw/mtggokit/metrics/metricslog/common/tree/master/model).
+[`metricslog/common/model`](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/common/tree/master/model).
 
 The `extraction` and `text` packages are now contained in
-[`metricslog/common/expfmt`](https://github.com/Schneizelw/mtggokit/metrics/metricslog/common/tree/master/expfmt).
+[`metricslog/common/expfmt`](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/common/tree/master/expfmt).
 
 ## Contributing and community
 

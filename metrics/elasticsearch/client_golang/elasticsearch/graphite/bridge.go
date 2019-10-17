@@ -25,12 +25,12 @@ import (
     "sort"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/expfmt"
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/model"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
 )
 
 const (

@@ -21,7 +21,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/fs"
 )
 
 // CPUStat shows how much time the cpu spend in various stages.

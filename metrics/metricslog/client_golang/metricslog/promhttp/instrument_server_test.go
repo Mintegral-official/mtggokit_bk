@@ -20,7 +20,7 @@ import (
     "net/http/httptest"
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 func TestLabelCheck(t *testing.T) {

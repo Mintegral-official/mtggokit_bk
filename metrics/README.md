@@ -38,7 +38,7 @@ MonitorSystem:
 ```golang 
 import (
     "time"
-    "github.com/mtggokit/metrics"
+    "github.com/Mintegral-official/mtggokit/metrics"
 )
 func main() {
     var logger *log.Logger
@@ -77,7 +77,7 @@ Metrics:
 ```golang 
 import (
     "time"
-    "github.com/mtggokit/metrics"
+    "github.com/Mintegral-official/mtggokit/metrics"
 )
 func main() {
     lables := []string{"score"}

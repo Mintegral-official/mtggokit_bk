@@ -1,5 +1,5 @@
 language: go
-# Supported Go versions are synced with github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang.
+# Supported Go versions are synced with github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang.
 go:
   - 1.9.x
   - 1.10.x

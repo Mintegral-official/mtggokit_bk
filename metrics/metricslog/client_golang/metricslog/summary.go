@@ -25,7 +25,7 @@ import (
     "github.com/beorn7/perks/quantile"
     "github.com/golang/protobuf/proto"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 // quantileLabel is used for the label that defines the quantile in a

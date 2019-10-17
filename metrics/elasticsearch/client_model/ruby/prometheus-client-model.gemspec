@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Tobias Schmidt']
   spec.email         = ['tobidt@gmail.com']
   spec.summary       = 'Data model artifacts for the Prometheus Ruby client'
-  spec.homepage      = 'https://github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/tree/master/ruby'
+  spec.homepage      = 'https://github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/tree/master/ruby'
   spec.license       = 'Apache 2.0'
 
   spec.files         = %w[README.md LICENSE] + Dir.glob('{lib/**/*}')

@@ -20,7 +20,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/util"
 )
 
 // ClassCoolingDeviceStats contains info from files in /sys/class/thermal/cooling_device[0-9]*

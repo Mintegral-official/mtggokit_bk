@@ -26,9 +26,9 @@
 //              "math/rand"
 //              "net/http"
 //
-//              "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
-//              "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog/promauto"
-//              "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog/promhttp"
+//              "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
+//              "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog/promauto"
+//              "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog/promhttp"
 //      )
 //
 //      var histogram = promauto.NewHistogram(metricslog.HistogramOpts{
@@ -57,9 +57,9 @@
 //          "fmt"
 //          "net/http"
 //
-//          "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
-//          "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog/promauto"
-//          "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog/promhttp"
+//          "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
+//          "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog/promauto"
+//          "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog/promhttp"
 //      )
 //
 //      func main() {
@@ -126,7 +126,7 @@
 // state in net/http has been criticized widely, and some avoid it altogether.
 package promauto
 
-import "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+import "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 
 // NewCounter works like the function of the same name in the metricslog package
 // but it automatically registers the Counter with the

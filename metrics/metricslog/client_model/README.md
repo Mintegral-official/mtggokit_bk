@@ -8,7 +8,7 @@ be required.
 
 ## Java
 * [Apache Maven](http://maven.apache.org)
-* [Prometheus Maven Repository](https://github.com/Schneizelw/mtggokit/metrics/metricslog/io.metricslog-maven-repository) checked out into ../io.metricslog-maven-repository
+* [Prometheus Maven Repository](https://github.com/Mintegral-official/mtggokit/metrics/metricslog/io.metricslog-maven-repository) checked out into ../io.metricslog-maven-repository
 
 ## Go
 *  [Go](http://golang.org)
@@ -22,5 +22,5 @@ be required.
     $ make
 
 # Getting Started
-  * The Go source code is periodically indexed: [Go Protocol Buffer Model](http://godoc.org/github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go).
+  * The Go source code is periodically indexed: [Go Protocol Buffer Model](http://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go).
   * All of the core developers are accessible via the [Prometheus Developers Mailinglist](https://groups.google.com/forum/?fromgroups#!forum/metricslog-developers).

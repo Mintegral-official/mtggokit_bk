@@ -18,7 +18,7 @@ import (
     "strings"
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/xfs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/xfs"
 )
 
 func TestParseStats(t *testing.T) {

@@ -21,7 +21,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/fs"
 )
 
 // Proc provides information about a running process.

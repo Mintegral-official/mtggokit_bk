@@ -15,7 +15,7 @@ syntax = "proto2";
 
 package io.metricslog.client;
 option java_package = "io.metricslog.client";
-option go_package = "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go;io_metricslog_client";
+option go_package = "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go;io_metricslog_client";
 
 message LabelPair {
   optional string name  = 1;

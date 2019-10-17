@@ -16,7 +16,7 @@ package expfmt
 import (
     "bytes"
     "github.com/golang/protobuf/proto"
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
     "net/http"
     "testing"
 )

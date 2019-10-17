@@ -40,9 +40,9 @@ import (
     "sync"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/expfmt"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 const (

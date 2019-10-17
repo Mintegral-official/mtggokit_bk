@@ -21,7 +21,7 @@ import (
     "testing/quick"
     "time"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 func listenGaugeStream(vals, result chan float64, done chan struct{}) {

@@ -31,7 +31,7 @@
 //
 // See the documentation of the Pushgateway to understand the meaning of
 // the grouping key and the differences between Push and Add:
-// https://github.com/Schneizelw/mtggokit/metrics/metricslog/pushgateway
+// https://github.com/Mintegral-official/mtggokit/metrics/metricslog/pushgateway
 package push
 
 import (
@@ -43,10 +43,10 @@ import (
     "net/url"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/expfmt"
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 const (

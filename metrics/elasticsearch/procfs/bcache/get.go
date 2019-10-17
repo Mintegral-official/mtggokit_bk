@@ -23,7 +23,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/internal/fs"
 )
 
 // FS represents the pseudo-filesystem proc, which provides an interface to

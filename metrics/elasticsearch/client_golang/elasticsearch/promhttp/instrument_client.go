@@ -19,7 +19,7 @@ import (
     "net/http/httptrace"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
 )
 
 // The RoundTripperFunc type is an adapter to allow the use of ordinary

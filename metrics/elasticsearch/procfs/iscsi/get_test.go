@@ -17,7 +17,7 @@ import (
     "reflect"
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/procfs/iscsi"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/procfs/iscsi"
 )
 
 func TestGetStats(t *testing.T) {

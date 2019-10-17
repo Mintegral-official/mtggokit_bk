@@ -27,9 +27,9 @@ import (
 
     json "github.com/json-iterator/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/model"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/model"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/api"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/api"
 )
 
 type apiTest struct {

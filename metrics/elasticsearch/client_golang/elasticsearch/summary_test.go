@@ -22,7 +22,7 @@ import (
     "testing/quick"
     "time"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 )
 
 func TestSummaryWithDefaultObjectives(t *testing.T) {

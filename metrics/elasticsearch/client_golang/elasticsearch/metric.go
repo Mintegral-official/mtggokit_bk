@@ -21,7 +21,7 @@ import (
     "github.com/cihub/seelog"
     "github.com/golang/protobuf/proto"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 )
 
 const separatorByte byte = 255

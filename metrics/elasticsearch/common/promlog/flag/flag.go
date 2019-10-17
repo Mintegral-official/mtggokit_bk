@@ -14,7 +14,7 @@
 package flag
 
 import (
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/common/promlog"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/common/promlog"
     kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 

@@ -23,7 +23,7 @@ import (
     "testing"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 type errorCollector struct{}

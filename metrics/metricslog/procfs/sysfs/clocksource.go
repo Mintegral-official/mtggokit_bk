@@ -19,7 +19,7 @@ import (
     "path/filepath"
     "strings"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/util"
 )
 
 // ClockSource contains metrics related to the clock source

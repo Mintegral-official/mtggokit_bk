@@ -20,7 +20,7 @@ import (
     "strings"
     "text/template"
 
-    "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
+    "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_golang/elasticsearch"
 )
 
 // Build information. Populated at build-time.

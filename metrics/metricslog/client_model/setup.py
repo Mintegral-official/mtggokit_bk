@@ -9,7 +9,7 @@ setup(
     author_email = 'matt.proud@gmail.com',
     description = 'Data model artifacts for the Prometheus client.',
     license = 'Apache License 2.0',
-    url = 'http://github.com/Schneizelw/mtggokit/metrics/metricslog/client_model',
+    url = 'http://github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model',
     packages = ['metricslog', 'metricslog/client', 'metricslog/client/model'],
     package_dir = {'': 'python'},
     requires = ['protobuf(==2.4.1)'],

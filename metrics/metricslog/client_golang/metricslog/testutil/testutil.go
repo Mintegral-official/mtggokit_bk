@@ -38,12 +38,12 @@ import (
     "fmt"
     "io"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/common/expfmt"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/common/expfmt"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog/internal"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog/internal"
 )
 
 // ToFloat64 collects all Metrics from the provided Collector. It expects that

@@ -19,7 +19,7 @@ import (
     "reflect"
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/util"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/util"
 )
 
 func TestClassThermalZoneStats(t *testing.T) {

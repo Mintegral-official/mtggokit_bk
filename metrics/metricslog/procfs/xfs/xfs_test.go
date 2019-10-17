@@ -17,7 +17,7 @@ package xfs_test
 import (
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/xfs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/xfs"
 )
 
 func TestReadProcStat(t *testing.T) {

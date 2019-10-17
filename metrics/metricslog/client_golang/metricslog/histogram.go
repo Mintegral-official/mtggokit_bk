@@ -23,7 +23,7 @@ import (
 
     "github.com/golang/protobuf/proto"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/metricslog/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_model/go"
 )
 
 // A Histogram counts individual observations from an event or sample stream in

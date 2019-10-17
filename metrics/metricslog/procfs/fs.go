@@ -14,7 +14,7 @@
 package procfs
 
 import (
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/internal/fs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/internal/fs"
 )
 
 // FS represents the pseudo-filesystem sys, which provides an interface to

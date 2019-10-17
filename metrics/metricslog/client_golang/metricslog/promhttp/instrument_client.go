@@ -19,7 +19,7 @@ import (
     "net/http/httptrace"
     "time"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/client_golang/metricslog"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog"
 )
 
 // The RoundTripperFunc type is an adapter to allow the use of ordinary

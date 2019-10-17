@@ -18,7 +18,7 @@ import (
     "strings"
     "testing"
 
-    "github.com/Schneizelw/mtggokit/metrics/metricslog/procfs/nfs"
+    "github.com/Mintegral-official/mtggokit/metrics/metricslog/procfs/nfs"
 )
 
 func TestNewNFSClientRPCStats(t *testing.T) {

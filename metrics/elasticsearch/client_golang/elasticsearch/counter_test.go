@@ -18,7 +18,7 @@ import (
     "math"
     "testing"
 
-    dto "github.com/Schneizelw/mtggokit/metrics/elasticsearch/client_model/go"
+    dto "github.com/Mintegral-official/mtggokit/metrics/elasticsearch/client_model/go"
 )
 
 func TestCounterAdd(t *testing.T) {
