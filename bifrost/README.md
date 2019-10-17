@@ -84,15 +84,15 @@ container是一个接口，代表存放数据的容器，Bifrost有两种实现�
 
 ```go
 const (
-    DataModeAdd    DataMode = 0
-    DataModeUpdate DataMode = 1
-    DataModeDel    DataMode = 2
+	DataModeAdd    DataMode = 0
+	DataModeUpdate DataMode = 1
+	DataModeDel    DataMode = 2
 )
 
 // 数据迭代器
 type DataIterator interface {
-    HasNext() bool
-    Next() (DataMode, MapKey, interface{}, error)
+	HasNext() bool
+	Next() (DataMode, MapKey, interface{}, error)
 }
 
 // key of the map, because of go-lang not support generic type，
@@ -249,10 +249,10 @@ StreamerServer有两部分：
 
    ``````go
    type BaseInfo struct {
-    Name        string
-    UpdateTime  int64
-    DataVersion int
-    Data        map[container.MapKey]interface{}
+   	Name        string
+   	UpdateTime  int64
+   	DataVersion int
+   	Data        map[container.MapKey]interface{}
    }
    ``````
 
@@ -262,15 +262,15 @@ StreamerServer有两部分：
 
    ```go
    type BaseReq struct {
-    Name     string
-    Space    string
-    Progress int64
+   	Name     string
+   	Space    string
+   	Progress int64
    }
    type IncRecord struct {
-    DataMode container.DataMode
-    MapKey   container.MapKey
-    Progress int64 // 更新时间
-    Value    interface{}
+   	DataMode container.DataMode
+   	MapKey   container.MapKey
+   	Progress int64 // 更新时间
+   	Value    interface{}
    }
    type Response struct {
      Records []Record
@@ -282,18 +282,18 @@ StreamerServer有两部分：
 3. 示例
 
    ``````go
-    bs := NewBiFrostStreamer(&BiFrostStreamerCfg{
-        Name:         "BiFrostStreamer",
-        Version:      0,
-        Ip:           "",
-        Port:         1111,
-        BaseFilePath: "",
-        Interval:     60,
-        IsSync:       true,
-        IsOnline:     false,
+   	bs := NewBiFrostStreamer(&BiFrostStreamerCfg{
+   		Name:         "BiFrostStreamer",
+   		Version:      0,
+   		Ip:           "",
+   		Port:         1111,
+   		BaseFilePath: "",
+   		Interval:     60,
+   		IsSync:       true,
+   		IsOnline:     false,
        WriteFile:    false,
        CacheSize:    10000,
-    })
+   	})
    ``````
 
 
