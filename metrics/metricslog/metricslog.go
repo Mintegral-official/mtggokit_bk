@@ -21,7 +21,6 @@ type Counter struct {
 // and returns a usable Counter object.
 func NewCounterFrom(opts metricslog.CounterOpts, logOpts metricslog.CounterLogOpts, labelNames []string) *Counter {
     cv := metricslog.NewCounterVec(opts, logOpts, labelNames)
-    metricslog.MustRegister(cv)
     return NewCounter(cv)
 }
 
@@ -55,7 +54,6 @@ type Gauge struct {
 // and returns a usable Gauge object.
 func NewGaugeFrom(opts metricslog.GaugeOpts, logOpts metricslog.GaugeLogOpts, labelNames []string) *Gauge {
     gv := metricslog.NewGaugeVec(opts, logOpts, labelNames)
-    metricslog.MustRegister(gv)
     return NewGauge(gv)
 }
 
@@ -96,7 +94,6 @@ type Summary struct {
 // and returns a usable Summary object.
 func NewSummaryFrom(opts metricslog.SummaryOpts, logOpts metricslog.SummaryLogOpts, labelNames []string) *Summary {
     sv := metricslog.NewSummaryVec(opts, logOpts, labelNames)
-    metricslog.MustRegister(sv)
     return NewSummary(sv)
 }
 
@@ -132,7 +129,6 @@ type Histogram struct {
 // and returns a usable Histogram object.
 func NewHistogramFrom(opts metricslog.HistogramOpts, logOpts metricslog.HistogramLogOpts, labelNames []string) *Histogram {
     hv := metricslog.NewHistogramVec(opts, logOpts, labelNames)
-    metricslog.MustRegister(hv)
     return NewHistogram(hv)
 }
 
