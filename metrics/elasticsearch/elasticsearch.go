@@ -21,7 +21,6 @@ type Counter struct {
 // and returns a usable Counter object.
 func NewCounterFrom(opts elasticsearch.CounterOpts, esOpts elasticsearch.CounterEsOpts, labelNames []string) *Counter {
     cv := elasticsearch.NewCounterVec(opts, esOpts, labelNames)
-    elasticsearch.MustRegister(cv)
     return NewCounter(cv)
 }
 
@@ -55,7 +54,6 @@ type Gauge struct {
 // and returns a usable Gauge object.
 func NewGaugeFrom(opts elasticsearch.GaugeOpts, esOpts elasticsearch.GaugeEsOpts, labelNames []string) *Gauge {
     gv := elasticsearch.NewGaugeVec(opts, esOpts, labelNames)
-    elasticsearch.MustRegister(gv)
     return NewGauge(gv)
 }
 
@@ -96,7 +94,6 @@ type Summary struct {
 // and returns a usable Summary object.
 func NewSummaryFrom(opts elasticsearch.SummaryOpts, esOpts elasticsearch.SummaryEsOpts, labelNames []string) *Summary {
     sv := elasticsearch.NewSummaryVec(opts, esOpts, labelNames)
-    elasticsearch.MustRegister(sv)
     return NewSummary(sv)
 }
 
@@ -132,7 +129,6 @@ type Histogram struct {
 // and returns a usable Histogram object.
 func NewHistogramFrom(opts elasticsearch.HistogramOpts, esOpts elasticsearch.HistogramEsOpts, labelNames []string) *Histogram {
     hv := elasticsearch.NewHistogramVec(opts, esOpts, labelNames)
-    elasticsearch.MustRegister(hv)
     return NewHistogram(hv)
 }
 
