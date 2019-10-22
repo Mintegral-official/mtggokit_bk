@@ -6,7 +6,6 @@ script:
 go:
   - 1.11.x
   - 1.12.x
-  - tip
 env:
   global:
     - GORACE="halt_on_error=1"

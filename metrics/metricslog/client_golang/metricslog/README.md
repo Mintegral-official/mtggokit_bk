@@ -1,0 +1,1 @@
+See [![go-doc](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog?status.svg)](https://godoc.org/github.com/Mintegral-official/mtggokit/metrics/metricslog/client_golang/metricslog).
