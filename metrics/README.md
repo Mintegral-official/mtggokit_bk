@@ -6,7 +6,7 @@ metrics为监控服务提供了统一的调用接口,主要包括counter,gauge,s
 
 install:
 ```
-go get -v -u github.com/Mintegral-official/mtggokit/metrics/multi
+go get -v -u github.com/Mintegral-official/mtggokit/metrics/metrics
 ```
 
 
