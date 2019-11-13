@@ -136,7 +136,7 @@ func SetLog(logPath string, logFileName string) seelog.LoggerInterface {
                 </buffered>
             </outputs>
             <formats>
-                <format id="runtime" format="%%Date %%Time [%%LEVEL] %%Msg%%n"/>
+                <format id="runtime" format="%%Msg%%n"/>
             </formats>
         </seelog>
     `
