@@ -1,2 +1,1 @@
-# mtggokit
-mtg go kit
+# mtggokit move to https://github.com/Mintegral-official/mtggokit
